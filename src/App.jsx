@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as  Router, Routes, Route } from "react-router-dom";
+import BusinessAdminPanel from "./pages/BusinessAdminPanel";
+import RafflePartenerAdminPanel from "./pages/RafflePartenerAdminPanel";
+import SuperAdminPanel from "./pages/SuperAdminPanel";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Notfound from "./pages/Notfound";
+import Home from "./pages/Home";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+    <Routes>
+      <Route path="/" element={<Home/>} />
+      <Route path="/signup" element={<Signup/>} />
+      <Route path="/login" element={<Login/>} />
+      <Route path="/business-db" element={<BusinessAdminPanel/>} />
+      <Route path="/raffle-db" element={<RafflePartenerAdminPanel/>} />
+      <Route path="/admin-db" element={<SuperAdminPanel />} />
+
+      {/* <Route path="/forgotpassword" element={<ForgotPassword />} /> */}
+      {/* <Route path="/403" element={<Unauthorized />} /> */}
+      {/* wasnt sure how to do this correctly but this route enables pages that dont match our routes to land
+          on the 404 page */}
+      <Route path="*" element={<Notfound />} />
+    </Routes>
+
+    </Router>
+  );
 }
 
-export default App
+export default App;
