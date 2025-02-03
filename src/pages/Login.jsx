@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
-function LoginForm({ className, ...props }) {
+function Login({ className, ...props }) {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -108,4 +108,4 @@ function LoginForm({ className, ...props }) {
   );
 }
 
-export default LoginForm;
+export default Login;
