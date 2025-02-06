@@ -22,6 +22,7 @@ function EditYourInfo({ className, ...props }) {
   //   let iDescriptionJson = await iDescription.json();
   //   return [iNameJson.toString(), iDescriptionJson.toString()];
   // });
+  let [logo, setLogo] = useState(null);
   let [name, setName] = useState("");
   let [description, setDescription] = useState("");
   function handleNameChange(e) {
@@ -29,6 +30,9 @@ function EditYourInfo({ className, ...props }) {
   }
   function handleDescriptionChange(e) {
     setDescription(e.target.value);
+  }
+  function handleLogoChange(e) {
+    setLogo(URL.createObjectURL(e.target.files[0]));
   }
   function handleSubmit() {
     return;
@@ -44,14 +48,14 @@ function EditYourInfo({ className, ...props }) {
             Update information about you
           </CardTitle>
           <CardDescription className="text-gray-400">
-            Contact us to update your logo!
+            Fields marked * are required
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="item">Name</Label>
+                <Label htmlFor="item">Name*</Label>
                 <Input
                   className="text-white-400"
                   id="item"
@@ -63,7 +67,7 @@ function EditYourInfo({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description*</Label>
                 <Input
                   className="text-white-400"
                   id="description"
@@ -72,6 +76,15 @@ function EditYourInfo({ className, ...props }) {
                   required
                   onChange={handleDescriptionChange}
                   // defaultValue={initialDescription}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="description">Logo</Label>
+                <Input
+                  className="text-white-400"
+                  id="logo"
+                  type="file"
+                  onChange={handleLogoChange}
                 />
               </div>
               <Button type="submit" className="w-full" onClick={handleSubmit}>
@@ -86,6 +99,7 @@ function EditYourInfo({ className, ...props }) {
 }
 
 function AddRaffleItem({ className, ...props }) {
+  let [logo, setLogo] = useState(null);
   let [item, setItem] = useState("");
   let [description, setDescription] = useState("");
   let [quantity, setQuantity] = useState(0);
@@ -102,12 +116,16 @@ function AddRaffleItem({ className, ...props }) {
   function handleResourceLinkChange(e) {
     setResourceLink(e.target.value);
   }
+  function handleLogoChange(e) {
+    setLogo(URL.createObjectURL(e.target.files[0]));
+  }
   function handleSubmit() {
     let formData = {
       item: item,
       description: description,
       quantity: quantity,
       resourceLink: resourceLink,
+      logo: logo,
     };
     //send this to db
   }
@@ -138,7 +156,7 @@ function AddRaffleItem({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description"></Label>
+                <Label htmlFor="description">Description</Label>
                 <Input
                   className="text-white-400"
                   id="description"
@@ -149,7 +167,7 @@ function AddRaffleItem({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="quantity"></Label>
+                <Label htmlFor="quantity">Quantity</Label>
                 <Input
                   className="text-white-400"
                   id="quantity"
@@ -160,7 +178,7 @@ function AddRaffleItem({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="resourceLink"></Label>
+                <Label htmlFor="resourceLink">Resource Link (URL)</Label>
                 <Input
                   className="text-white-400"
                   id="resourceLink"
@@ -168,6 +186,15 @@ function AddRaffleItem({ className, ...props }) {
                   placeholder="Resource Link"
                   required
                   onChange={handleResourceLinkChange}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="description">Logo</Label>
+                <Input
+                  className="text-white-400"
+                  id="logo"
+                  type="file"
+                  onChange={handleLogoChange}
                 />
               </div>
 
@@ -188,7 +215,7 @@ function RafflePartenerAdminPanel() {
         defaultValue="you"
         className="w-[400px] bg-[#333] border-transparent focus:border-[#F9EB02] text-white mb-4 rounded-xl"
       >
-        <TabsList className="grid w-full grid-cols-2 bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white mb-4">
+        <TabsList className="grid w-full grid-cols-3 bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white mb-4">
           <TabsTrigger
             value="you"
             className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
@@ -196,17 +223,25 @@ function RafflePartenerAdminPanel() {
             You
           </TabsTrigger>
           <TabsTrigger
+            value="addRaffleItems"
+            className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
+          >
+            Add Raffle Item
+          </TabsTrigger>
+          <TabsTrigger
             value="raffleItems"
             className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
           >
-            Raflle Items
+            Raffle Items
           </TabsTrigger>
         </TabsList>
         <TabsContent value="you">
           <EditYourInfo />
         </TabsContent>
-        <TabsContent value="raffleItems">
+        <TabsContent value="addRaffleItems">
           <AddRaffleItem />
+        </TabsContent>
+        <TabsContent value="raffleItems">
           {/* do a forEach for raffleItem from the db data to render out as these blocks */}
           {/* <RaffleItem item="placeholderItem" description="placeholderDescription" /> */}
         </TabsContent>

@@ -7,6 +7,11 @@ export default function RaffleItem({
   quantity,
   resourceLink,
 }) {
+  function handleDelete(e) {
+    e.target.parentElement.parentElement.remove();
+    //call the api
+    window.location.reload();
+  }
   return (
     <Card className="bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white w-96 mr-6 ml-6 text-center">
       <CardTitle className="text-2xl mr-6 ml-6 mb-6 mt-6">{item}</CardTitle>
@@ -23,7 +28,7 @@ export default function RaffleItem({
         </div>
       </CardContent>{" "}
       <CardFooter className="flex justify-center">
-        <Button id="delete" onClick="#">
+        <Button id="delete" onClick={handleDelete}>
           Delete
         </Button>
       </CardFooter>
