@@ -1,111 +1,86 @@
-import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+
   Settings2,
   SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Building-U",
+    email: "Building-u@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
+
   navMain: [
     {
-      title: "Playground",
+      title: "Manage Business",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "Add Business",
+          url: "#",
+        },
+        {
+          title: "Edit Business",
+          url: "#",
+        },
+        {
+          title: "Delete Business",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Manage Students",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Add Student",
+          url: "#",
+        },
+        {
+          title: "Ban Student",
+          url: "#",
+        },
+        {
+          title: "Kick Student",
+          url: "#",
+        },
+        {
+          title: "Manage Dubl-U-nes",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Manage Raffle Partners",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Upload Item",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Remove Item",
           url: "#",
         },
         {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Delete Item",
           url: "#",
         },
       ],
@@ -116,39 +91,15 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Edit Account",
           url: "#",
         },
         {
-          title: "Team",
+          title: "Change Password",
           url: "#",
         },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
+
       ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 }
@@ -158,9 +109,6 @@ export function AppSidebar({
 }) {
   return (
     (<Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
