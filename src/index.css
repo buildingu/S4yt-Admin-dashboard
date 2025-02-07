@@ -17,7 +17,6 @@
 
 a {
   font-weight: 500;
-  color: #F9EB02; 
   text-decoration: none;
 }
 a:hover {
@@ -54,18 +53,24 @@ button {
   cursor: pointer;
   transition: background-color 0.25s, border-color 0.25s, transform 0.25s;
 }
-button:hover {
-  background-color: #d4c102;
-  border-color: #d4c102;
-  transform: scale(1.05);
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
 
 @layer base {
   :root {
     --radius: 0.5rem;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
