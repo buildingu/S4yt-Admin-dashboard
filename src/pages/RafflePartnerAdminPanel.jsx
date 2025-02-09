@@ -79,7 +79,7 @@ function EditYourInfo({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description">Logo</Label>
+                <Label htmlFor="logo">Logo</Label>
                 <Input
                   className="text-white-400"
                   id="logo"
