@@ -157,11 +157,12 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
   }
   function handleSubmit() {
     let formData = {
-      item: item,
-      description: description,
-      quantity: quantity,
-      resourceLink: resourceLink,
-      logo: logo,
+      question: question,
+      optionA: optionA,
+      optionB: optionB,
+      optionC: optionC,
+      explanation: explanation,
+      correct: correct,
     };
     //send this to db
   }
