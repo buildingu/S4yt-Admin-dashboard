@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BusinessAdminPanel from "./pages/BusinessAdminPanel";
-import RafflePartnerAdminPanel from "./pages/RafflePartnerAdminPanel";
 import SuperAdminPanel from "./pages/SuperAdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -16,7 +15,6 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/business-db" element={<BusinessAdminPanel />} />
-        <Route path="/raffle-db" element={<RafflePartnerAdminPanel />} />
         <Route path="/admin-db" element={<SuperAdminPanel />} />
 
         {/* <Route path="/forgotpassword" element={<ForgotPassword />} /> */}
