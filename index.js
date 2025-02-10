@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 
+const loginRouter = require('./routes/loginRoute');
+const reggisterRouter = require('./routes/registerRoute');
+
 dotenv.config();
 
 const port = process.env.PORT
@@ -24,3 +27,5 @@ app.listen(port, () => {
   });
   
 
+app.use('/api/auth', loginRouter)
+app.use('/api/auth', reggisterRouter)
