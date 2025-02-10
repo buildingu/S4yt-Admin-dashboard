@@ -50,7 +50,13 @@ function EditYourInfo({ className, ...props }) {
     setYtLink(e.target.value);
   }
   function handleSubmit() {
-    return;
+    let formData = {
+      name: name,
+      description: description,
+      logo: logo,
+      question: question,
+      youtubeLink: ytLink,
+    };
   }
   return (
     <div
