@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -17,9 +18,18 @@ function Login({ className, ...props }) {
   const [errors, setErrors] = useState({});
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
+      const data = {
+        email: email,
+        password: password,
+      };
+      const response = await axios.post('/api/login', data);
+      if(response.status === 200){
+        localStorage.setItem("user", JSON.stringify(response.data.userData));
+        localStorage.setItem("token", response.data.token);
+      }
       console.log("Sending data to backend:", {
         email: email,
         password: password,

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -48,6 +49,7 @@ function Signup({ className, ...props }) {
     e.preventDefault();
     if (validate()) {
       console.log("Sending data to backend:", formData);
+      axios.post('/api/register', formData);
     }
   };
 
