@@ -27,5 +27,5 @@ app.listen(port, () => {
   });
   
 
-app.use('/api/auth', loginRouter)
-app.use('/api/auth', reggisterRouter)
+app.use('/api', loginRouter)
+app.use('/api', reggisterRouter)
