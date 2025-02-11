@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const loginRouter = require('./routes/loginRoute');
 const registerRouter = require('./routes/registerRoute');
+const businessRouter = require('./routes/businessRoute');
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ app.listen(port, () => {
   });
   
 
-app.use('/api', loginRouter)
-app.use('/api', registerRouter)
+app.use('/api', loginRouter);
+app.use('/api', registerRouter);
+app.use('/api', businessRouter);
