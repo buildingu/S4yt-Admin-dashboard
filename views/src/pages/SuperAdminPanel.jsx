@@ -20,9 +20,6 @@ export default function SuperAdminPanel() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-[#333] md:w-[900px] text-center">
-        <div className="w-full bg-[#333] text-[#242424] rounded-lg py-2 font-semibold ">
-          Hey!
-        </div>
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
