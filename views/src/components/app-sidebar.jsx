@@ -1,23 +1,18 @@
-import {
-  BookOpen,
-  Bot,
+import { BookOpen, Bot, Settings2, SquareTerminal } from "lucide-react";
 
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { baseUrl } from "@/API";
 
 const data = {
   user: {
-    name: "Building-U",
+    name: "Super Admin",
     email: "Building-u@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
@@ -25,90 +20,64 @@ const data = {
   navMain: [
     {
       title: "Manage Business",
-      url: "#",
+      url: `${baseUrl}/admin-db/manage-business`,
       icon: Bot,
       items: [
         {
           title: "Add Business",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-business/add-business`,
         },
         {
-          title: "Edit Business",
-          url: "#",
+          title: "View Businesses",
+          url: `${baseUrl}/admin-db/manage-business/view-businesses`,
         },
         {
           title: "Delete Business",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-business/delete-business`,
         },
       ],
     },
     {
       title: "Manage Students",
-      url: "#",
+      url: `${baseUrl}/admin-db/manage-users`,
       icon: BookOpen,
       items: [
         {
-          title: "Add Student",
-          url: "#",
-        },
-        {
           title: "Ban Student",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-users/ban-user`,
         },
         {
           title: "Kick Student",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-users/kick-user`,
         },
         {
           title: "Manage Dubl-U-nes",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-users/manage-tokens`,
         },
       ],
     },
     {
       title: "Manage Raffle Partners",
-      url: "#",
+      url: `${baseUrl}/admin-db/manage-raffle`,
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "Upload Item",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-raffle/add-item`,
         },
         {
           title: "Remove Item",
-          url: "#",
+          url: `${baseUrl}/admin-db/manage-raffle/remove-item`,
         },
-        {
-          title: "Delete Item",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Edit Account",
-          url: "#",
-        },
-        {
-          title: "Change Password",
-          url: "#",
-        },
-
       ],
     },
   ],
-}
+};
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar({ ...props }) {
   return (
-    (<Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
@@ -116,6 +85,6 @@ export function AppSidebar({
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
-    </Sidebar>)
+    </Sidebar>
   );
 }

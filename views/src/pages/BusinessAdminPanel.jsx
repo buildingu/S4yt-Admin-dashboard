@@ -20,122 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { baseUrl } from "@/API";
+import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
 
-function EditYourInfo({ className, ...props }) {
-  // let [initialName, initialDescription] = await useEffect(async () => {
-  //   let iName = await fetch("#");
-  //   let iDescription = await fetch("#");
-  //   let iNameJson = await iName.json();
-  //   let iDescriptionJson = await iDescription.json();
-  //   return [iNameJson.toString(), iDescriptionJson.toString()];
-  // });
-  let [logo, setLogo] = useState(null);
-  let [name, setName] = useState("");
-  let [description, setDescription] = useState("");
-  let [question, setquestion] = useState("");
-  let [ytLink, setYtLink] = useState("");
-  function handleNameChange(e) {
-    setName(e.target.value);
-  }
-  function handleDescriptionChange(e) {
-    setDescription(e.target.value);
-  }
-  function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
-  }
-  function handleQuestionChange(e) {
-    setQuestion(e.target.value);
-  }
-  function handleYTLinkChange(e) {
-    setYtLink(e.target.value);
-  }
-  function handleSubmit() {
-    let formData = {
-      name: name,
-      description: description,
-      logo: logo,
-      question: question,
-      youtubeLink: ytLink,
-    };
-  }
-  return (
-    <div
-      className={cn("flex flex-col gap-6 border-transparent", className)}
-      {...props}
-    >
-      <Card className="bg-[#333] text-white mb-4 border-transparent">
-        <CardHeader>
-          <CardTitle className="text-2xl">Your Info</CardTitle>
-          <CardDescription className="text-gray-400">
-            Update Information About You
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  className="text-white-400"
-                  id="name"
-                  type="text"
-                  placeholder="Your Business Name"
-                  required
-                  onChange={handleNameChange}
-                  // defaultValue={initialName}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  className="text-white-400"
-                  id="description"
-                  type="textarea"
-                  placeholder="Your Business Description"
-                  required
-                  onChange={handleDescriptionChange}
-                  // defaultValue={initialDescription}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="logo">Logo</Label>
-                <Input
-                  className="text-white-400"
-                  id="logo"
-                  type="file"
-                  onChange={handleLogoChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="question">Question</Label>
-                <Input
-                  className="text-white-400"
-                  id="question"
-                  type="text"
-                  placeholder="Your Question"
-                  onChange={handleQuestionChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="ytlink">Youtube Link</Label>
-                <Input
-                  className="text-white-400"
-                  id="ytlink"
-                  type="text"
-                  placeholder="Your YouTube Link"
-                  onChange={handleYTLinkChange}
-                />
-              </div>
-              <Button type="submit" className="w-full" onClick={handleSubmit}>
-                Create
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
 function AddLearnAndEarnQuestion({ className, ...props }) {
   let [question, setQuestion] = useState("");
   let [optionA, setOptionA] = useState("");
@@ -431,7 +318,7 @@ function BusinessAdminPanel() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="you">
-          <EditYourInfo />
+          <EditYourInfo userType="business" />
         </TabsContent>
         <TabsContent value="addLearnAndEarnQuestions">
           <AddLearnAndEarnQuestion />
