@@ -4,7 +4,7 @@ const raffleItemSchema = new mongoose.Schema({
     description: { type: String },
     quantity: { type: Number, required: true },
     resource_link: { type: String },
-    logo: { type: String },
+    logo: { type: File },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
   });

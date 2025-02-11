@@ -5,7 +5,7 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 
 const loginRouter = require('./routes/loginRoute');
-const reggisterRouter = require('./routes/registerRoute');
+const registerRouter = require('./routes/registerRoute');
 
 dotenv.config();
 
@@ -28,4 +28,4 @@ app.listen(port, () => {
   
 
 app.use('/api', loginRouter)
-app.use('/api', reggisterRouter)
+app.use('/api', registerRouter)
