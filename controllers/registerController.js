@@ -19,8 +19,12 @@ exports.registerUser = async (req, res) => {
 
     await user.save();
     await business.save();
-
-    res.status(201).json({ message: 'User registered successfully', user, business });
+    const userData = { //no password
+      _id: user._id,
+      email: user.email,
+      role: user.roles
+    }
+    res.status(201).json({ message: 'User registered successfully', userData, business });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
