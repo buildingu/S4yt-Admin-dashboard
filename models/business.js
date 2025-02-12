@@ -12,10 +12,11 @@ const businessSchema = new mongoose.Schema({
       explanation: String,
       correct: String
     }],
-    youtube_link: { type: String },
+    youtubeLink: { type: String },
     logo: { type: String },
     winners: [{ type: mongoose.Schema.Types.ObjectId }],
-    attendance_confirm: { type: Boolean, default: false }
+    attendance_confirm: { type: Boolean, default: false },
+    deleted: { type: Boolean, default: false}
   }, { timestamps: true });
   
 module.exports = mongoose.model('adminBusiness', businessSchema);
