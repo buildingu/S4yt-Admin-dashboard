@@ -42,13 +42,9 @@ function Login({ className, ...props }) {
     let passwordInput = password;
     let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+
     if (!emailRegex.test(emailInput)) {
       tempErrors.email = "Enter a valid email.";
-    }
-    if (!passwordRegex.test(passwordInput)) {
-      tempErrors.password =
-        "Password must be at least 8 characters, include one uppercase letter and one number.";
     }
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
