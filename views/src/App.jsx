@@ -6,6 +6,8 @@ import Signup from "./pages/Signup";
 import Notfound from "./pages/Notfound";
 import Home from "./pages/Home";
 import "./App.css";
+import AddRaffleItem from "./customComponents/AddRaffleItem";
+import EditYourInfo from "./customComponents/BusinessUpdateInfo";
 
 function App() {
   return (
@@ -15,7 +17,19 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/business-db" element={<BusinessAdminPanel />} />
-        <Route path="/admin-db" element={<SuperAdminPanel />} />
+        <Route path="/admin-db" element={<SuperAdminPanel />}>
+          <Route
+            path="manage-business/add-business"
+            element={<EditYourInfo />}
+          />
+          <Route path="manage-business/view-business" element={<Element />} />
+          <Route path="manage-business/delete-business" element={<Element />} />
+          <Route path="manage-users/ban-user" element={<Element />} />
+          <Route path="manage-users/kick-user" element={<Element />} />
+          <Route path="manage-users/manage-tokens" element={<Element />} />
+          <Route path="manage-raffle/add-item" element={<AddRaffleItem />} />
+          <Route path="manage-raffle/remove-item" element={<Element />} />
+        </Route>
 
         {/* <Route path="/forgotpassword" element={<ForgotPassword />} /> */}
         {/* <Route path="/403" element={<Unauthorized />} /> */}
