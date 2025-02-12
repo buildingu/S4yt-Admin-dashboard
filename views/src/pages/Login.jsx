@@ -10,12 +10,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/AuthContext";
 
 function Login({ className, ...props }) {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const { login } = useContext(AuthContext);
+  
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
   const handleSubmit = async (e) => {
@@ -27,8 +30,7 @@ function Login({ className, ...props }) {
       };
       const response = await axios.post('/api/login', data);
       if(response.status === 200){
-        localStorage.setItem("user", JSON.stringify(response.data.userData));
-        localStorage.setItem("token", response.data.token);
+        login(response.data.userData, response.data.token);
       }
       console.log("Sending data to backend:", {
         email: email,

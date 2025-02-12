@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./AuthContext";
 import BusinessAdminPanel from "./pages/BusinessAdminPanel";
 import SuperAdminPanel from "./pages/SuperAdminPanel";
 import Login from "./pages/Login";
@@ -11,6 +12,7 @@ import EditYourInfo from "./customComponents/BusinessUpdateInfo";
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -38,6 +40,7 @@ function App() {
         <Route path="*" element={<Notfound />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 
