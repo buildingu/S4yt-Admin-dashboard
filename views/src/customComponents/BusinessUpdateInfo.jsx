@@ -1,6 +1,8 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import axios from 'axios';
 import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/AuthContext";
 import {
   Card,
   CardContent,
@@ -10,7 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -35,6 +38,8 @@ export default function EditYourInfo({ className, userType, ...props }) {
   let [description, setDescription] = useState("");
   let [question, setquestion] = useState("");
   let [ytLink, setYtLink] = useState("");
+  const {user} = useContext(AuthContext);
+
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -50,7 +55,9 @@ export default function EditYourInfo({ className, userType, ...props }) {
   function handleYTLinkChange(e) {
     setYtLink(e.target.value);
   }
-  function handleSubmit() {
+  
+  function handleSubmit(e) {
+    e.preventDefault();
     let formData = {
       name: name,
       description: description,
@@ -58,6 +65,9 @@ export default function EditYourInfo({ className, userType, ...props }) {
       question: question,
       youtubeLink: ytLink,
     };
+    //
+  
+    axios.put(`/api/business/${user.businessId}`, formData)
   }
   return (
     <div
@@ -131,7 +141,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   onChange={handleYTLinkChange}
                 />
               </div>
-              <Button type="submit" className="w-full" onClick={handleSubmit}>
+              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!user}>
                 Create
               </Button>
             </div>
