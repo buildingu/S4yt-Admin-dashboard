@@ -7,6 +7,7 @@ const __dirname = path.dirname(__filename); // ✅ Define __dirname
 
 import react from '@vitejs/plugin-react'
 
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -28,5 +29,7 @@ export default defineConfig({
       },
     },
     hmr: false,
+    base: '/',
+    
   },
 })
