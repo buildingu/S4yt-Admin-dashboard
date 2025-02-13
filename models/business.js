@@ -19,7 +19,7 @@ const businessSchema = new mongoose.Schema({
   award: { type: Number, default: 0, min: 0 },
   awardedTotal: { type: Number, default: 0, min: 0 },
   deleted: { type: Boolean, default: false }
-}, { strict: false, collection: 'buisnesses' });
+}, { strict: false, collection: 'businesses' });
   
-module.exports = mongoose.model('businesses', businessSchema);
+module.exports = mongoose.model('business', businessSchema);
   
