@@ -9,7 +9,7 @@ import react from '@vitejs/plugin-react'
 
 const API_BASE_URL = process.env.VITE_ENVIRONMENT === 'production' 
   ? process.env.VITE_PROD_BASE_URL
-  : VITE_ENVIRONMENT
+  : process.env.VITE_DEV_BASE_URL
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
