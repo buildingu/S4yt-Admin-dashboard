@@ -10,12 +10,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/AuthContext";
 
 function Login({ className, ...props }) {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const { login } = useContext(AuthContext);
+  
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
   const handleSubmit = async (e) => {
@@ -27,8 +30,7 @@ function Login({ className, ...props }) {
       };
       const response = await axios.post('/api/login', data);
       if(response.status === 200){
-        localStorage.setItem("user", JSON.stringify(response.data.userData));
-        localStorage.setItem("token", response.data.token);
+        login(response.data.userData, response.data.token);
       }
       console.log("Sending data to backend:", {
         email: email,
@@ -42,13 +44,9 @@ function Login({ className, ...props }) {
     let passwordInput = password;
     let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+
     if (!emailRegex.test(emailInput)) {
       tempErrors.email = "Enter a valid email.";
-    }
-    if (!passwordRegex.test(passwordInput)) {
-      tempErrors.password =
-        "Password must be at least 8 characters, include one uppercase letter and one number.";
     }
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;

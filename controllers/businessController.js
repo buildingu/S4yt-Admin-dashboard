@@ -27,11 +27,12 @@ exports.updateBusiness = async (req, res) => {
         const updatedBusiness = await Business.findByIdAndUpdate(
             id,
             {
-                business_name: name,
+                name: name,
                 description: description,
-                logo: logo,
-                question_main: question,
-                youtubeLink: youtubeLink
+                logo_s4yt: logo,
+                //question_main: question, will need to refactor cause rn they don't have a main question 
+                // for the business in the main app mmodel not sure why but leave as is until further clarification
+                video_urls: youtubeLink
             },
             { new: true }
         );
