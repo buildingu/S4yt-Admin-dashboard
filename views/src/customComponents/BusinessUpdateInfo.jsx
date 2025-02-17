@@ -32,11 +32,11 @@ export default function EditYourInfo({ className, userType, ...props }) {
   //   let iDescriptionJson = await iDescription.json();
   //   return [iNameJson.toString(), iDescriptionJson.toString()];
   // });
-  let [logo, setLogo] = useState(null);
-  let [name, setName] = useState("");
-  let [description, setDescription] = useState("");
-  let [question, setQuestion] = useState("");
-  let [ytLink, setYtLink] = useState("");
+  const [logo, setLogo] = useState(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [question, setQuestion] = useState("");
+  const [ytLink, setYtLink] = useState("");
   const {id} = useParams();
 
   const fetchBusinessInfo = async () => {
