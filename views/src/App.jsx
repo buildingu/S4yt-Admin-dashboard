@@ -25,8 +25,8 @@ function App() {
             path="manage-business/add-business"
             element={<EditYourInfo />}
           />
-          <Route path="manage-business/view-business" element={<Element />} />
-          <Route path="manage-business/delete-business" element={<Element />} />
+          <Route path="manage-business/view-business/:id" element={<Element />} />
+          <Route path="manage-business/delete-business/:id" element={<Element />} />
           <Route path="manage-users/ban-user" element={<Element />} />
           <Route path="manage-users/kick-user" element={<Element />} />
           <Route path="manage-users/manage-tokens" element={<Element />} />
