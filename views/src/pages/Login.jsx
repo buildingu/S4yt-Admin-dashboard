@@ -33,7 +33,7 @@ function Login({ className, ...props }) {
       const response = await axios.post('/api/login', data);
       if(response.status === 200){
         login(response.data.userData, response.data.token);
-        navigate("/business-db/user.businessId");
+        navigate(`/business-db/${user.businessId}`);
       }
       console.log("Sending data to backend:", {
         email: email,

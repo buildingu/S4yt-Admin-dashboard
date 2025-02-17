@@ -23,7 +23,8 @@ exports.loginUser = async (req, res) => {
       _id: user._id,
       email: user.email,
       role: user.roles,
-      businessId: business ? business._id : null
+      businessName: business?.business_name, 
+      businessId: business?._id
     }
     
 

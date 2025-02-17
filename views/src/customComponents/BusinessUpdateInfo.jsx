@@ -2,7 +2,6 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/AuthContext";
 import {
   Card,
   CardContent,
@@ -36,10 +35,21 @@ export default function EditYourInfo({ className, userType, ...props }) {
   let [logo, setLogo] = useState(null);
   let [name, setName] = useState("");
   let [description, setDescription] = useState("");
-  let [question, setquestion] = useState("");
+  let [question, setQuestion] = useState("");
   let [ytLink, setYtLink] = useState("");
-  const {user} = useContext(AuthContext);
+  const {id} = useParams();
 
+  const fetchBusinessInfo = async () => {
+    const response = await axios.get(`/api/business/${id}`)
+    setName(response.data.business_name);
+    setDescription(response.data.description);
+    setQuestion(response.data.question_main);
+    setYtLink(response.data.youtube_link);
+  }
+
+  useEffect(() => {
+    fetchBusinessInfo();
+  }, [])
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -67,8 +77,9 @@ export default function EditYourInfo({ className, userType, ...props }) {
     };
     //
   
-    axios.put(`/api/business/${user.businessId}`, formData)
+    axios.put(`/api/business/${id}`, formData)
   }
+
   return (
     <div
       className={cn("flex flex-col gap-6 border-transparent", className)}
@@ -95,9 +106,9 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   id="name"
                   type="text"
                   placeholder="Your Business Name"
+                  defaultValue={name}
                   required
                   onChange={handleNameChange}
-                  // defaultValue={initialName}
                 />
               </div>
               <div className="grid gap-2">
@@ -109,7 +120,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   placeholder="Your Business Description"
                   required
                   onChange={handleDescriptionChange}
-                  // defaultValue={initialDescription}
+                 defaultValue={description}
                 />
               </div>
               <div className="grid gap-2">
@@ -129,6 +140,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your Question"
                   onChange={handleQuestionChange}
+                  defaultValue={question}
                 />
               </div>
               <div className="grid gap-2">
@@ -139,9 +151,10 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your YouTube Link"
                   onChange={handleYTLinkChange}
+                  defaultValue={ytLink}
                 />
               </div>
-              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!user}>
+              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!id}>
                 Create
               </Button>
             </div>

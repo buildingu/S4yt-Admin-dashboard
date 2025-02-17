@@ -12,7 +12,7 @@ const businessSchema = new mongoose.Schema({
       explanation: String,
       correct: String
     }],
-    youtube_Link: { type: String },
+    youtube_link: { type: String },
     logo: { type: String },
     winners: [{ type: mongoose.Schema.Types.ObjectId }],
     attendance_confirm: { type: Boolean, default: false },
