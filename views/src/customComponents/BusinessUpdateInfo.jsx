@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import ToastComponent from "@/components/ToastComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -38,6 +39,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
   const [question, setQuestion] = useState("");
   const [ytLink, setYtLink] = useState("");
   const {id} = useParams();
+  const toastRef = useRef();
 
   const fetchBusinessInfo = async () => {
     const response = await axios.get(`/api/business/${id}`)
@@ -76,8 +78,8 @@ export default function EditYourInfo({ className, userType, ...props }) {
       youtubeLink: ytLink,
     };
     //
-  
     axios.put(`/api/business/${id}`, formData)
+    toastRef.current.triggerToast();
   }
 
   return (
@@ -155,12 +157,13 @@ export default function EditYourInfo({ className, userType, ...props }) {
                 />
               </div>
               <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!id}>
-                Create
+                Update
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
+      <ToastComponent ref={toastRef} description="Business Information has been successfully updated" title="Updated" />
     </div>
   );
 }
