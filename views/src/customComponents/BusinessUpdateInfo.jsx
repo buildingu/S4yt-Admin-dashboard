@@ -2,7 +2,6 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/AuthContext";
 import {
   Card,
   CardContent,
@@ -12,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import ToastComponent from "@/components/ToastComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -33,13 +33,25 @@ export default function EditYourInfo({ className, userType, ...props }) {
   //   let iDescriptionJson = await iDescription.json();
   //   return [iNameJson.toString(), iDescriptionJson.toString()];
   // });
-  let [logo, setLogo] = useState(null);
-  let [name, setName] = useState("");
-  let [description, setDescription] = useState("");
-  let [question, setquestion] = useState("");
-  let [ytLink, setYtLink] = useState("");
-  const {user} = useContext(AuthContext);
+  const [logo, setLogo] = useState(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [question, setQuestion] = useState("");
+  const [ytLink, setYtLink] = useState("");
+  const {id} = useParams();
+  const toastRef = useRef();
 
+  const fetchBusinessInfo = async () => {
+    const response = await axios.get(`/api/business/${id}`)
+    setName(response.data.business_name);
+    setDescription(response.data.description);
+    setQuestion(response.data.question_main);
+    setYtLink(response.data.youtube_link);
+  }
+
+  useEffect(() => {
+    fetchBusinessInfo();
+  }, [])
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -66,9 +78,10 @@ export default function EditYourInfo({ className, userType, ...props }) {
       youtubeLink: ytLink,
     };
     //
-  
-    axios.put(`/api/business/${user.businessId}`, formData)
+    axios.put(`/api/business/${id}`, formData)
+    toastRef.current.triggerToast();
   }
+
   return (
     <div
       className={cn("flex flex-col gap-6 border-transparent", className)}
@@ -95,9 +108,9 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   id="name"
                   type="text"
                   placeholder="Your Business Name"
+                  defaultValue={name}
                   required
                   onChange={handleNameChange}
-                  // defaultValue={initialName}
                 />
               </div>
               <div className="grid gap-2">
@@ -109,7 +122,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   placeholder="Your Business Description"
                   required
                   onChange={handleDescriptionChange}
-                  // defaultValue={initialDescription}
+                 defaultValue={description}
                 />
               </div>
               <div className="grid gap-2">
@@ -129,6 +142,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your Question"
                   onChange={handleQuestionChange}
+                  defaultValue={question}
                 />
               </div>
               <div className="grid gap-2">
@@ -139,15 +153,17 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your YouTube Link"
                   onChange={handleYTLinkChange}
+                  defaultValue={ytLink}
                 />
               </div>
-              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!user}>
-                Create
+              <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!id}>
+                Update
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
+      <ToastComponent ref={toastRef} description="Business Information has been successfully updated" title="Updated" />
     </div>
   );
 }

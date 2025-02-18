@@ -1,6 +1,81 @@
 # Admin Dashboard
 
 This repo is for the s4yt admin dashboard. 
+# MERN Project with Embedded Client (Vite)
+
+This is a **MERN stack** project where the React client is embedded inside the `views/` folder and runs using **Vite**.
+
+## 🚀 Project Structure
+
+```
+/project-root
+├# Express server (Node.js)
+│── models/         # Mongoose models
+│── routes/         # API routes
+│── controllers/    # Business logic
+│── index.js        # Entry point for the backend
+│── package.json    # Backend dependencies
+│
+├── views/              # Embedded React app (Vite)
+│   ├── src/            # React source files
+│   ├── public/         # Static assets
+│   ├── index.html      # React entry point
+│   ├── vite.config.js  # Vite configuration
+│   ├── .env            # Environment variables
+│   ├── package.json    # Frontend dependencies
+│
+├── .env                # Environment variables
+├── README.md           # Project documentation
+```
+
+---
+
+## 🛠️ **Setup Instructions**
+
+### **1️⃣ Clone the Repository**
+
+```sh
+git clone <repo-url> 
+```
+
+### **2️⃣ Install Dependencies**
+
+#### 🔹 **Backend**
+
+```sh
+cd backend
+npm install
+```
+
+#### 🔹 **Frontend (Vite React)**
+
+```sh
+cd ./views
+npm install
+```
+
+---
+
+## 🚀 **Running the Project**
+
+### **Start the Backend Server**
+
+```sh
+npm run dev
+```
+
+- Runs the Express server on `http://localhost:5000`
+
+### **Start the Vite Frontend**
+
+```sh
+cd ./views
+npm run dev
+```
+
+- Runs the client on `http://localhost:3000`
+
+---
 
 # S4YT Dashboard API Documentation
 
@@ -54,7 +129,7 @@ This documentation provides the details of the API endpoints for the S4YT Admin 
 
 ### 4. **PUT /api/business/{businessId}**
    - **Description**: This endpoint allows updating the business details.
-   - **URL**: `http://localhost:4000/api/business/67ab86a627a0afca404537c3`
+   - **URL**: `http://localhost:4000/api/business/:id`
    - **Request Body** (URL Encoded):
      - `description`: 
      - `logo`: 
@@ -63,7 +138,7 @@ This documentation provides the details of the API endpoints for the S4YT Admin 
    
    **Example Request:**
    ```http
-   PUT http://localhost:4000/api/business/67ab86a627a0afca404537c3
+   PUT http://localhost:4000/api/business/:id
    Content-Type: application/x-www-form-urlencoded
    description=a+test+business+for+an+example&logo=test&question=sample+question&youtubeLink=link
    ```
@@ -72,12 +147,12 @@ This documentation provides the details of the API endpoints for the S4YT Admin 
 
 ### 5. **DELETE /api/business/{businessId}**
    - **Description**: This endpoint allows deleting a specific business.
-   - **URL**: `http://localhost:4000/api/business/67ab86a627a0afca404537c3`
+   - **URL**: `http://localhost:4000/api/business/:id`
    - **Request**: `DELETE`
    
    **Example Request:**
    ```http
-   DELETE http://localhost:4000/api/business/67ab86a627a0afca404537c3
+   DELETE http://localhost:4000/api/business/:id
    ```
 
 ---

@@ -22,7 +22,8 @@ exports.loginUser = async (req, res) => {
     const userData = { //no password
       _id: user._id,
       email: user.email,
-      role: user.role,
+      role: user.roles,
+      businessName: business?.business_name, 
       businessId: business?._id
     }
     

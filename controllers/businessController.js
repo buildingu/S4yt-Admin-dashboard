@@ -30,9 +30,8 @@ exports.updateBusiness = async (req, res) => {
                 name: name,
                 description: description,
                 logo_s4yt: logo,
-                //question_main: question, will need to refactor cause rn they don't have a main question 
-                // for the business in the main app mmodel not sure why but leave as is until further clarification
-                video_urls: youtubeLink
+                question_main: question, 
+                youtube_link: youtubeLink
             },
             { new: true }
         );
