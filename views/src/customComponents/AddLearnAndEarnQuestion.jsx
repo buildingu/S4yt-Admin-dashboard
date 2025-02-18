@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,13 +37,14 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
   function handleOptionCChange(e) {
     setOptionC(e.target.value);
   }
-  function handleCorrectChange(e) {
-    setCorrect(e.target.value);
+  function handleCorrectChange(value) {
+    setCorrect(value);
   }
   function handleExplanationChange(e) {
     setExplanation(e.target.value);
   }
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     let formData = {
       business_id: props.id,
       question: question,
@@ -56,8 +58,9 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
         correct: correct,
       }
     };
-    //send this to db
+    axios.post('/api/multiple-choice', formData)
   }
+
   return (
     <div
       className={cn("flex flex-col gap-6 border-transparent", className)}
@@ -122,7 +125,7 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                 <Select
                   id="correct"
                   className="text-white"
-                  onChange={handleCorrectChange}
+                  onValueChange={handleCorrectChange}
                 >
                   <SelectTrigger className="text-white">
                     <SelectValue />

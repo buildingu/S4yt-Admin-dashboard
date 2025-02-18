@@ -1,13 +1,22 @@
 const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
 
+exports.getBusinesses = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const business = await Business.find({deleted: false });
+        if (!business) return res.status(404).json({ message: 'Businesses not found' });
+
+        res.status(200).json(business);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching businesses', error });
+    }
+};
+
 exports.getBusinessById = async (req, res) => {
     const id = req.params.id;
     try {
-        if (!(await checkIfExists(Business, id)))
-            return res.status(404).json({ message: 'Business not found or already deleted' });
-
-        const business = await Business.findById(id);
+        const business = await Business.findOne({ _id: id, deleted: false });
         if (!business) return res.status(404).json({ message: 'Business not found' });
 
         res.status(200).json(business);
@@ -56,4 +65,5 @@ exports.deleteBusiness = async (req, res) => {
         res.status(500).json({ message: 'Error deleting business', error });
     }
 };
+
 

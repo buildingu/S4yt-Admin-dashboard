@@ -7,6 +7,7 @@ const cors = require("cors");
 const loginRouter = require('./routes/loginRoute');
 const registerRouter = require('./routes/registerRoute');
 const businessRouter = require('./routes/businessRoute');
+const multipleChoiceRouter = require('./routes/multipleChoiceRoute');
 
 dotenv.config();
 
@@ -31,3 +32,4 @@ app.listen(port, () => {
 app.use('/api', loginRouter);
 app.use('/api', registerRouter);
 app.use('/api', businessRouter);
+app.use('/api', multipleChoiceRouter);
