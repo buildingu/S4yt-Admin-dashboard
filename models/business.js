@@ -4,14 +4,7 @@ const businessSchema = new mongoose.Schema({
     business_name: { type: String, required: true },
     description: { type: String },
     question_main: { type: String },
-    questions_learn_earn: [{
-      question: String,
-      optionA: String,
-      optionB: String,
-      optionC: String,
-      explanation: String,
-      correct: String
-    }],
+    question_title: { type: String },
     youtube_link: { type: String },
     logo: { type: String },
     winners: [{ type: mongoose.Schema.Types.ObjectId }],
