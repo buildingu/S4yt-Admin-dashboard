@@ -17,14 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import ToastComponent from "@/components/ToastComponent";
 function AddLearnAndEarnQuestion({ className, ...props }) {
-  let [question, setQuestion] = useState("");
+  let [question, setQuestion] = useState(""); // note of improvement this can be changed into an object so that onky one state variable is initialized
   let [optionA, setOptionA] = useState("");
   let [optionB, setOptionB] = useState("");
   let [optionC, setOptionC] = useState("");
   let [explanation, setExplanation] = useState("");
   let [correct, setCorrect] = useState("");
+  const [disabled, setDisabled] = useState(false);
+  const toastRef = useRef();
   function handleQuestionChange(e) {
     setQuestion(e.target.value);
   }
@@ -38,15 +41,30 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
     setOptionC(e.target.value);
   }
   function handleCorrectChange(value) {
+    console.log(value);
     setCorrect(value);
   }
   function handleExplanationChange(e) {
     setExplanation(e.target.value);
   }
-  function handleSubmit(e) {
+  const clearInput = () => {
+    setQuestion("");
+    setOptionA("");
+    setOptionB("");
+    setOptionC("");
+    setCorrect("");
+    setExplanation("");
+  }
+  const countUpdates = async () => {
+    const response = await axios.get(`/api/multiple-choice-count/${props.id}`);
+    if (response.data.count >= 3)
+      setDisabled(true);
+  }
+
+
+  async function handleSubmit(e) {
     e.preventDefault();
     let formData = {
-      business_id: props.id,
       question: question,
       answers: {
         choices: {
@@ -58,7 +76,14 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
         correct: correct,
       }
     };
-    axios.post('/api/multiple-choice', formData)
+    try {
+      await axios.post(`/api/multiple-choice/${props.id}`, formData); // finishes first to get updsated count
+      clearInput();
+      toastRef.current.triggerToast();
+      countUpdates();
+    } catch (error) {
+      console.error("Error submitting question:", error);
+    }
   }
 
   return (
@@ -79,44 +104,52 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
               <div className="grid gap-2">
                 <Label htmlFor="question">Question</Label>
                 <Input
+                  disabled={disabled}
                   className="text-white"
                   id="question"
                   type="text"
                   placeholder="Enter Question"
                   required
+                  value={question}
                   onChange={handleQuestionChange}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="optionA">Option A</Label>
                 <Input
+                  disabled={disabled}
                   className="text-white"
                   id="optionA"
                   type="text"
                   placeholder="Option A"
                   required
+                  value={optionA}
                   onChange={handleOptionAChange}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="optionB">Option B</Label>
                 <Input
+                  disabled={disabled}
                   className="text-white"
                   id="optionB"
                   type="text"
                   placeholder="Option B"
                   required
+                  value={optionB}
                   onChange={handleOptionBChange}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="optionC">Option C</Label>
                 <Input
+                  disabled={disabled}
                   className="text-white"
                   id="optionC"
                   type="text"
                   placeholder="Option C"
                   required
+                  value={optionC}
                   onChange={handleOptionCChange}
                 />
               </div>
@@ -126,6 +159,8 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   id="correct"
                   className="text-white"
                   onValueChange={handleCorrectChange}
+                  disabled={disabled}
+                  value={correct}
                 >
                   <SelectTrigger className="text-white">
                     <SelectValue />
@@ -140,23 +175,26 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
               <div className="grid gap-2">
                 <Label htmlFor="explanation">Explanation</Label>
                 <Input
+                  disabled={disabled}
                   className="text-white"
                   id="explanation"
                   type="text"
                   placeholder="Explanation"
                   required
+                  value={explanation}
                   onChange={handleExplanationChange}
                 />
               </div>
             </div>
             <br />
 
-            <Button type="submit" className="w-full" onClick={handleSubmit}>
+            <Button type="submit" className="w-full" onClick={handleSubmit} disabled={disabled}>
               Create
             </Button>
           </form>
         </CardContent>
       </Card>
+      <ToastComponent ref={toastRef} description="New Learn and Earn question has been created" title="Learn and Earn" />
     </div>
   );
 }

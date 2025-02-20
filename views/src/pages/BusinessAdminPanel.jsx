@@ -1,28 +1,6 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseUrl } from "@/API";
-import ToastComponent from "@/components/ToastComponent";
 import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
 import AddLearnAndEarnQuestion from "@/customComponents/AddLearnAndEarnQuestion";
 import SubmitWinners from "@/customComponents/SubmitWinners";
@@ -31,6 +9,7 @@ import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
 
 
 function BusinessAdminPanel() {
+  const {id} = useParams();
   return (
     <div>
       <Tabs
@@ -73,7 +52,7 @@ function BusinessAdminPanel() {
           <EditYourInfo userType="business" />
         </TabsContent>
         <TabsContent value="addLearnAndEarnQuestions">
-          <AddLearnAndEarnQuestion />
+          <AddLearnAndEarnQuestion id={id}/>
         </TabsContent>
         <TabsContent value="learnAndEarnQuestions">
           {/* do a forEach for learnAndEarnQuestions from the db data to render out as these blocks */}

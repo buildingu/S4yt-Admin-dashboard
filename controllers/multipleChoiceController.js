@@ -3,7 +3,7 @@ const MultipleChoice = require('../models/multipleChoice')
 
 exports.getMultipleChoice = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; //business id used here, getting questions based on the business
         const questions = await MultipleChoice.find({ business_id: id, deleted: false });
         res.json({ questions });
       } catch (error) {
@@ -11,12 +11,23 @@ exports.getMultipleChoice = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
       }
 }
-
-exports.createMultipleChoice = async (req, res) => {
+exports.getMultipleChoiceCount = async (req, res) => {
     try {
-        const { business_id, question, answers } = req.body;
-        console.log(business_id, question, answers);
-        if (!business_id || !question || !answers) {
+        const {id} = req.params;    //business id used here, counting for each business
+        const count = await MultipleChoice.countDocuments({ business_id: id, deleted: false });
+        res.status(200).json({ count: count });
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+}
+exports.createMultipleChoice = async (req, res) => {
+    const business_id = req.params.id;
+    
+    try {
+        const {question, answers } = req.body;
+
+        if (!question || !answers) {
             return res.status(400).json({ error: "Missing fields" });
         }
 
@@ -28,7 +39,7 @@ exports.createMultipleChoice = async (req, res) => {
         const newQuestion = new MultipleChoice({ business_id, question, answers });
         await newQuestion.save();
 
-        res.status(201).json({ message: "Multiple choice created successfully", newQuestion });
+        res.status(200).json({ message: "Multiple choice created successfully", newQuestion });
     } catch (error) {
         res.status(500).json({ message: 'Error creating multiple choice', error });
     }
@@ -36,7 +47,7 @@ exports.createMultipleChoice = async (req, res) => {
 
 exports.updateMultipleChoice = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; //multiple choice's id here
         const { question, answers } = req.body;
 
         if (!question && !answers) {
@@ -63,7 +74,7 @@ exports.updateMultipleChoice = async (req, res) => {
 
 exports.deleteMultipleChoice = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; //multiple choice's id used here
         const deletedQuestion = await MultipleChoice.findByIdAndUpdate(id, { deleted: true });
         if (!deletedQuestion) {
             return res.status(404).json({ error: "Question not found" });
