@@ -14,16 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ToastComponent from "@/components/ToastComponent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseUrl } from "@/API";
+import { useNavigate } from "react-router-dom";
 
 export default function EditYourInfo({ className, userType, ...props }) {
   // let [initialName, initialDescription] = await useEffect(async () => {
@@ -37,16 +28,28 @@ export default function EditYourInfo({ className, userType, ...props }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
+  const [title, setTitle] = useState("");
   const [ytLink, setYtLink] = useState("");
-  const {id} = useParams();
+  const { id } = useParams();
   const toastRef = useRef();
+  const Navigate = useNavigate();
 
   const fetchBusinessInfo = async () => {
-    const response = await axios.get(`/api/business/${id}`)
-    setName(response.data.business_name);
-    setDescription(response.data.description);
-    setQuestion(response.data.question_main);
-    setYtLink(response.data.youtube_link);
+    try {
+      const response = await axios.get(`/api/business/${id}`); //redirect to prev page if the id of the business doesn't exist
+      if (response.status !== 200) {
+        Navigate(-1);
+      }
+      setName(response.data.business_name);
+      setDescription(response.data.description);
+      setQuestion(response.data.question_main);
+      setYtLink(response.data.youtube_link);
+      setTitle(response.data.title);
+    } catch (error) {
+      Navigate(-1);
+    }
+
+
   }
 
   useEffect(() => {
@@ -67,7 +70,11 @@ export default function EditYourInfo({ className, userType, ...props }) {
   function handleYTLinkChange(e) {
     setYtLink(e.target.value);
   }
-  
+
+  function handleTitleChange(e) {
+    setTitle(e.target.value);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     let formData = {
@@ -122,7 +129,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   placeholder="Your Business Description"
                   required
                   onChange={handleDescriptionChange}
-                 defaultValue={description}
+                  defaultValue={description}
                 />
               </div>
               <div className="grid gap-2">
@@ -143,6 +150,17 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   placeholder="Your Question"
                   onChange={handleQuestionChange}
                   defaultValue={question}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  className="text-white-400"
+                  id="title"
+                  type="text"
+                  placeholder="Your Question Title"
+                  onChange={handleTitleChange}
+                  defaultValue={title}
                 />
               </div>
               <div className="grid gap-2">

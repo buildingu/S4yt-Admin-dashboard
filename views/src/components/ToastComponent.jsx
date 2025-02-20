@@ -13,7 +13,6 @@ const ToastComponent = forwardRef(({ description, title }, ref) => {
     useImperativeHandle(ref, () => ({
         triggerToast: () => {
             setOpen(true);
-            console.log("reached");
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
                 setOpen(false);
