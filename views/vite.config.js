@@ -7,9 +7,10 @@ const __dirname = path.dirname(__filename); // ✅ Define __dirname
 
 import react from '@vitejs/plugin-react'
 
-const API_BASE_URL = process.env.VITE_ENVIRONMENT === 'production' 
+const API_BASE_URL = process.env.VITE_ENVIRONMENT == 'production' 
   ? process.env.VITE_PROD_BASE_URL
-  : VITE_ENVIRONMENT
+  : process.env.VITE_DEV_BASE_URL
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -25,7 +26,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: API_BASE_URL,
+        target: 'http://localhost:4000/',
         changeOrigin: true,
         secure: false,
       },

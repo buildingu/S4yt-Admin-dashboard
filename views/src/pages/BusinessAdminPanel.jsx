@@ -5,6 +5,7 @@ import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
 import AddLearnAndEarnQuestion from "@/customComponents/AddLearnAndEarnQuestion";
 import SubmitWinners from "@/customComponents/SubmitWinners";
 import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
+import LearnAndEarnQuestions from "@/customComponents/LearnAndEarnQuestions";
 
 
 
@@ -55,8 +56,7 @@ function BusinessAdminPanel() {
           <AddLearnAndEarnQuestion id={id}/>
         </TabsContent>
         <TabsContent value="learnAndEarnQuestions">
-          {/* do a forEach for learnAndEarnQuestions from the db data to render out as these blocks */}
-          {/* <LearnAndEarnQuestion item="placeholderItem" description="placeholderDescription" /> */}
+         <LearnAndEarnQuestions id={id}/>
         </TabsContent>
         <TabsContent value="submitWinners">
           <SubmitWinners />
