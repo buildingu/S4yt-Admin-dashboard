@@ -21,9 +21,13 @@ import {
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 function LearnAndEarnQuestions({ className, ...props }) {
-    const [open, setOpen] = useState(false);
+    const [questions, setQuestions] = useState([])
+    const populateQuestions = async()=>{
+        const resopnse = axios.get(`api/multiple-choice/${props.id}`)
+        setQuestions(resopnse);
+    }
     useEffect(() => {
-
+        populateQuestions();
     }, [])
     return (
         <div
