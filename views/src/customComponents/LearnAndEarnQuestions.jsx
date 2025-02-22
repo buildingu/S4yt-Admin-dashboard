@@ -21,10 +21,11 @@ import {
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 function LearnAndEarnQuestions({ className, ...props }) {
-    const [questions, setQuestions] = useState([])
-    const populateQuestions = async()=>{
-        const resopnse = axios.get(`api/multiple-choice/${props.id}`)
-        setQuestions(resopnse);
+    const [questions, setQuestions] = useState([]);
+    const populateQuestions = async () => {
+        const response = await axios.get(`/api/multiple-choice/${props.id}`)
+        setQuestions(response.data.questions);
+        console.log(props.id);
     }
     useEffect(() => {
         populateQuestions();
@@ -41,99 +42,113 @@ function LearnAndEarnQuestions({ className, ...props }) {
                         View and update Learn and Earn Questions
                     </CardDescription>
                 </CardHeader>
-                <CardContent> <Accordion sx={{ backgroundColor: '#333', color: 'white', borderRadius: '8px' }}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                    >         <Typography>Accordion 1</Typography>
-                    </AccordionSummary>
-
-
-                    <div className="my-2.5 rounded  p-2.5 ">
-                        <form>
-                            <div className="flex flex-col gap-6">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="question">Question</Label>
-                                    <Input
-                                        className="text-white"
-                                        id="question"
-                                        type="text"
-                                        placeholder="Enter Question"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="optionA">Option A</Label>
-                                    <Input
-                                        className="text-white"
-                                        id="optionA"
-                                        type="text"
-                                        placeholder="Option A"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="optionB">Option B</Label>
-                                    <Input
-                                        className="text-white"
-                                        id="optionB"
-                                        type="text"
-                                        placeholder="Option B"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="optionC">Option C</Label>
-                                    <Input
-                                        className="text-white"
-                                        id="optionC"
-                                        type="text"
-                                        placeholder="Option C"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid gap-2 text-white">
-                                    <Label htmlFor="correct">Correct Answer</Label>
-                                    <Select
-                                        id="correct"
-                                        className="text-white"
-                                    >
-                                        <SelectTrigger className="text-white">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="A">A</SelectItem>
-                                            <SelectItem value="B">B</SelectItem>
-                                            <SelectItem value="C">C</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="explanation">Explanation</Label>
-                                    <Input
-                                        className="text-white"
-                                        id="explanation"
-                                        type="text"
-                                        placeholder="Explanation"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <br />
-                            <div>
-                                <Button type="submit" className="w-full mb-4">
-                                    update
-                                </Button>
-                                <Button type="submit" className="w-full ">
-                                    delete
-                                </Button>
-                            </div>
-                        </form>
+                <CardContent>
+                {questions.map((question, index) => (
+    <Accordion 
+        key={index} 
+        className="mb-4"
+        sx={{ backgroundColor: '#333', color: 'white', borderRadius: '8px' }}
+    >
+        <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+            aria-controls={`panel${index}-content`}
+            id={`panel${index}-header`}
+        >
+            <Typography>{question.question}</Typography>
+        </AccordionSummary>
+        <div className="my-2.5 rounded p-2.5">
+            <form>
+                <div className="flex flex-col gap-6">
+                    <div className="grid gap-2">
+                        <Label htmlFor={`question-${index}`}>Question</Label>
+                        <Input
+                            className="text-white"
+                            id={`question-${index}`}
+                            type="text"
+                            placeholder="Enter Question"
+                            value={question.question}
+                            onChange={() => {}} 
+                            required
+                        />
                     </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor={`optionA-${index}`}>Option A</Label>
+                        <Input
+                            className="text-white"
+                            id={`optionA-${index}`}
+                            type="text"
+                            placeholder="Option A"
+                            value={question.answers.choices?.A || ""}
+                            onChange={() => {}}
+                            required
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor={`optionB-${index}`}>Option B</Label>
+                        <Input
+                            className="text-white"
+                            id={`optionB-${index}`}
+                            type="text"
+                            placeholder="Option B"
+                            value={question.answers.choices?.B || ""}
+                            onChange={() => {}}
+                            required
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor={`optionC-${index}`}>Option C</Label>
+                        <Input
+                            className="text-white"
+                            id={`optionC-${index}`}
+                            type="text"
+                            placeholder="Option C"
+                            value={question.answers.choices?.C || ""}
+                            onChange={() => {}}
+                            required
+                        />
+                    </div>
+                    <div className="grid gap-2 text-white">
+                        <Label htmlFor={`correct-${index}`}>Correct Answer</Label>
+                        <Select id={`correct-${index}`} 
+                        className="text-white"
+                        value={question.answers.correct}>
+                            <SelectTrigger className="text-white">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="A">A</SelectItem>
+                                <SelectItem value="B">B</SelectItem>
+                                <SelectItem value="C">C</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor={`explanation-${index}`}>Explanation</Label>
+                        <Input
+                            className="text-white"
+                            id={`explanation-${index}`}
+                            type="text"
+                            placeholder="Explanation"
+                            value={question.answers.explanation || ""}
+                            onChange={() => {}}
+                            required
+                        />
+                    </div>
+                </div>
+                <br />
+                <div>
+                    <Button type="submit" className="w-full mb-4">
+                        Update
+                    </Button>
+                    <Button type="submit" className="w-full">
+                        Delete
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </Accordion>
+))}
 
-
-                </Accordion>
                 </CardContent>
 
 
