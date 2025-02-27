@@ -14,12 +14,23 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export default function AddRaffleItem({ className, ...props }) {
   let [logo, setLogo] = useState(null);
   let [item, setItem] = useState("");
   let [description, setDescription] = useState("");
   let [quantity, setQuantity] = useState(0);
   let [resourceLink, setResourceLink] = useState("");
+  let [rafflePartner, setRafflePartner] = useState("");
   function handleItemChange(e) {
     setItem(e.target.value);
   }
@@ -35,6 +46,9 @@ export default function AddRaffleItem({ className, ...props }) {
   function handleLogoChange(e) {
     setLogo(URL.createObjectURL(e.target.files[0]));
   }
+  function handleRafflePartnerChange(e) {
+    setRafflePartner(e.target.value);
+  }
   function handleSubmit() {
     let formData = {
       item: item,
@@ -42,6 +56,7 @@ export default function AddRaffleItem({ className, ...props }) {
       quantity: quantity,
       resourceLink: resourceLink,
       logo: logo,
+      rafflePartner: rafflePartner,
     };
     //send this to db
   }
@@ -113,6 +128,28 @@ export default function AddRaffleItem({ className, ...props }) {
                   onChange={handleLogoChange}
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="RafflePartner">Image</Label>
+                <Input
+                  className="text-white-400"
+                  id="RafflePartner"
+                  type=""
+                  onChange={handleLogoChange}
+                />
+              </div>
+              <Select onValueChange={setRafflePartner(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Associated Raffle Partner" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Partners</SelectLabel>
+                    {/* {rafflePartners.map((element) => (
+                      <SelectItem value="element">{element}</SelectItem>
+                    ))} */}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
 
               <Button type="submit" className="w-full" onClick={handleSubmit}>
                 Create

@@ -1,0 +1,14 @@
+import mongoose, { Document, Schema } from "mongoose";
+
+const rafflePartnerSchema = new Schema({
+  logo: { type: String, required: true },
+  organization_name: { type: String, required: true },
+  resource_link: { type: String, required: true },
+  resource_category: { type: String, required: true },
+  deleted: { type: Boolean, default: false },
+});
+
+export const RafflePartnerModel = mongoose.model(
+  "RafflePartner",
+  rafflePartnerSchema
+);
