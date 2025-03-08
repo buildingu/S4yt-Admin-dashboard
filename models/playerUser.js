@@ -1,10 +1,7 @@
-import { Document, model, Schema, Types } from "mongoose";
-import User from "../typings/User";
-import { coinTransactionSchema } from "./coinTransaction";
+const { Document, model, Schema, Types } = require("mongoose");
 const userRoles = ["Admin", "Player", "Business"];
 const userEducation = ["Grade 9", "Grade 10", "Grade 11", "Grade 12", "Other"];
 const coinSources = ["register", "referral", "chest"];
-
 
 const userSchema = new Schema(
   {
@@ -34,9 +31,6 @@ const userSchema = new Schema(
       required: true,
     },
     coins: { type: Number, default: 0 },
-    coin_transactions: [coinTransactionSchema],
-    referral_code: { type: String, default: null },
-    accepted_referrals: [{ type: Types.ObjectId, ref: "AcceptedReferral" }],
     kicked: { type: Boolean, default: false },
     banned_until: { type: Date, default: null },
     attend_meeting: { type: Boolean, default: false },
@@ -46,9 +40,10 @@ const userSchema = new Schema(
       createdAt: "created_at", // Use `created_at` to store the created date
       updatedAt: "updated_at", // and `updated_at` to store the last updated date
     },
-  }
+  },
+  { strict: false }
 );
 
 const UserModel = model("User", userSchema);
 
-export default UserModel;
+module.exports = UserModel;

@@ -1,25 +1,25 @@
 const express = require("express");
 const router = express.Router();
-
+const { manageCoins } = require("../controllers/coinsController");
+const {
+  createRaffleItem,
+  updateRaffleItem,
+  deleteRaffleItem,
+} = require("../controllers/raffleItemController");
 const {
   updateBusiness,
   deleteBusiness,
 } = require("../controllers/businessController");
-const {
-  getBusinesses,
-  manageCoins,
-  createRaffleItem,
-} = require("../controllers/superAdminController");
+const { getBusinesses } = require("../controllers/superAdminController");
 
 router.get("/admin/businesses", getBusinesses);
-
-// router.post("/business", createBusiness);
 router.put("/business/:id", updateBusiness);
 router.delete("/business/:id", deleteBusiness);
 
 router.post("/raffleItem", createRaffleItem);
-// router.delete("/raffleitem", deleteRaffleItem);
+router.put("/raffleItem/:id", updateRaffleItem);
+router.delete("/raffleItem/:id", deleteRaffleItem);
 
-router.put("/manageCoins/:id/:newCoins", manageCoins);
+router.put("/manageCoins/:id", manageCoins);
 
 module.exports = router;
