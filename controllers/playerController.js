@@ -2,7 +2,7 @@ const Player = require("../models/playerUser");
 
 const { checkIfExists } = require("../utils/modelUtils");
 const manageCoins = async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
   const { newCoins } = req.body;
   try {
     if (await checkIfExists(Player, id)) {
@@ -11,7 +11,7 @@ const manageCoins = async (req, res) => {
     const updatedCoins = await Player.findByIdAndUpdate(id, {
       coins: newCoins,
     });
-    res.status(200).json({ message: updatedCoins });
+    res.status(200).json(`Coins Updated To ${newCoins} Successfully!`);
   } catch (error) {
     return res.status(500).json({ message: "Error Updating Tokens", error });
   }

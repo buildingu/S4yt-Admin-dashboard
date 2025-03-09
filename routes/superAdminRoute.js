@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { manageCoins, kickUser } = require("../controllers/playerController");
+const {
+  manageCoins,
+  kickUser,
+  banUser,
+} = require("../controllers/playerController");
 const {
   createRaffleItem,
   updateRaffleItem,
@@ -16,12 +20,12 @@ router.get("/admin/businesses", getBusinesses);
 router.put("/business/:id", updateBusiness);
 router.delete("/business/:id", deleteBusiness);
 
-router.post("/raffleItem", createRaffleItem);
-router.put("/raffleItem/:id", updateRaffleItem);
-router.delete("/raffleItem/:id", deleteRaffleItem);
+router.post("/raffle-item", createRaffleItem);
+router.put("/raffle-item/:id", updateRaffleItem);
+router.delete("/raffle-item/:id", deleteRaffleItem);
 
-router.put("/manageCoins/:id", manageCoins);
-router.put("kickUser/:id", kickUser);
-router.put("/banUser/:id", banUser);
+router.put("/manage-coins/:id", manageCoins);
+router.put("/kick-user/:id", kickUser);
+router.put("/ban-user/:id", banUser); //duration in ms - need to convert on the frontend
 
 module.exports = router;

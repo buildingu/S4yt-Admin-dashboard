@@ -1,8 +1,5 @@
 const { Document, model, Schema, Types } = require("mongoose");
 const userRoles = ["Admin", "Player", "Business"];
-const userEducation = ["Grade 9", "Grade 10", "Grade 11", "Grade 12", "Other"];
-const coinSources = ["register", "referral", "chest"];
-
 const userSchema = new Schema(
   {
     email: {

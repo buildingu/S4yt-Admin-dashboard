@@ -156,3 +156,86 @@ This documentation provides the details of the API endpoints for the S4YT Admin 
    ```
 
 ---
+### 6. **GET /api/admin/businesses**
+   - **Description**: This endpoint fetches all businesses.
+   - **URL**: `http://localhost:4000/api/admin/businesses`
+   - **Request**: `GET`
+   
+   **Example Request:**
+   ```http
+   GET http://localhost:4000/api/business/:id
+   ```
+
+---
+
+### 7. **POST /api/raffle-item**
+   - **Description**: This endpoint creates a new raffle item.
+   - **URL**: `http://localhost:4000/api/raffle-item`
+   - **Request**: `POST`
+   
+   **Example Request:**
+   ```http
+   POST http://localhost:4000/api/raffle-item
+   ```
+
+---
+
+### 8. **PUT /api/raffle-item/{itemId}**
+   - **Description**: This endpoint modifies information about a raffle item located by its ID.
+   - **URL**: `http://localhost:4000/api/raffle-item/:id`
+   - **Request**: `PUT`
+   
+   **Example Request:**
+   ```http
+   PUT http://localhost:4000/api/raffle-item/:id
+   ```
+
+---
+
+### 9. **DELETE /api/raffle-item/{itemId}**
+   - **Description**: This endpoint deletes a raffle item located by its ID.
+   - **URL**: `http://localhost:4000/api/raffle-item/:id`
+   - **Request**: `DELETE`
+   
+   **Example Request:**
+   ```http
+   DELETE http://localhost:4000/api/raffle-item/:id
+   ```
+
+---
+
+### 10. **PUT /api/manage-coins/{userId}**
+   - **Description**: This endpoint allows modification of a user's coin total located by their user ID.
+   - **URL**: `http://localhost:4000/api/manage-coins/:id`
+   - **Request**: `PUT`
+   
+   **Example Request:**
+   ```http
+   PUT http://localhost:4000/api/manage-coins/:id
+   ```
+---
+### 11. **PUT /api/kick-user/{userId}**
+   - **Description**: This endpoint allows the admin to kick a user based on their user ID.
+   - **URL**: `http://localhost:4000/api/kick-user/:id`
+   - **Request**: `PUT`
+   
+   **Example Request:**
+   ```http
+   PUT http://localhost:4000/api/kick-user/:id
+   ```
+
+---
+
+### 12. **PUT /api/ban-user/{userId}**
+   - **Description**: This endpoint allows the admin to ban a user (located with their ID) for a specific time period.
+   - **URL**: `http://localhost:4000/api/ban-user/:id`
+   - **Request**: `PUT`
+   
+   **Example Request:**
+   ```http
+   PUT http://localhost:4000/api/ban-user/:id
+   ```
+
+---
+
+
