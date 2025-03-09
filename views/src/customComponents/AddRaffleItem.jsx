@@ -137,7 +137,7 @@ export default function AddRaffleItem({ className, ...props }) {
                   onChange={handleLogoChange}
                 />
               </div>
-              <Select onValueChange={setRafflePartner(value)}>
+              <Select onValueChange={handleRafflePartnerChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Associated Raffle Partner" />
                 </SelectTrigger>

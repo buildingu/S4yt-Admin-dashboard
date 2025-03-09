@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { manageCoins } = require("../controllers/coinsController");
+const { manageCoins, kickUser } = require("../controllers/playerController");
 const {
   createRaffleItem,
   updateRaffleItem,
@@ -21,5 +21,7 @@ router.put("/raffleItem/:id", updateRaffleItem);
 router.delete("/raffleItem/:id", deleteRaffleItem);
 
 router.put("/manageCoins/:id", manageCoins);
+router.put("kickUser/:id", kickUser);
+router.put("/banUser/:id", banUser);
 
 module.exports = router;

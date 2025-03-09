@@ -6,9 +6,6 @@ const createRaffleItem = async (req, res) => {
   const { item, description, quantity, logo, resourceLink, rafflePartner } =
     req.body;
   try {
-    if (await checkIfExists(RaffleItem, item)) {
-      return res.status(400).json({ message: "Raffle Item Already Exists" });
-    }
     if (!(await checkIfExists(RafflePartner, rafflePartner))) {
       return res.status(404).json({ message: "Raffle Partner not Found" });
     }

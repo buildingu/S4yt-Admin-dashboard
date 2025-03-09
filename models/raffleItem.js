@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+const { model, Schema } = require("mongoose");
 
 const raffleItemSchema = new Schema(
   {
@@ -14,4 +14,4 @@ const raffleItemSchema = new Schema(
 
 const RaffleItemModel = model("RaffleItem", raffleItemSchema);
 
-export default RaffleItemModel;
+module.exports = RaffleItemModel;

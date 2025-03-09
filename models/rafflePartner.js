@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+const { Schema, mongoose } = require("mongoose");
 
 const rafflePartnerSchema = new Schema({
   logo: { type: String, required: true },
@@ -8,7 +8,4 @@ const rafflePartnerSchema = new Schema({
   deleted: { type: Boolean, default: false },
 });
 
-export const RafflePartnerModel = mongoose.model(
-  "RafflePartner",
-  rafflePartnerSchema
-);
+module.exports = mongoose.model("RafflePartner", rafflePartnerSchema);
