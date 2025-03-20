@@ -45,4 +45,27 @@ const banUser = async (req, res) => {
   }
 };
 
-module.exports = { manageCoins, kickUser, banUser };
+const getUsers = async (req, res) => {
+  try {
+    const users = await Player.find({ role: "Player" });
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No Users Found" });
+    }
+    let filteredUsers = [];
+    users.forEach((user) => {
+      let filteredUser = {
+        _id: user._id,
+        name: user.name,
+        banned_until: user.banned_until,
+        email: user.email,
+        coins: user.coins,
+      };
+      filteredUsers.push(filteredUser);
+    });
+    res.status(200).json(filteredUsers);
+  } catch (error) {
+    return res.status(500).json({ message: "Error Fetching Users", error });
+  }
+};
+
+module.exports = { manageCoins, kickUser, banUser, getUsers };

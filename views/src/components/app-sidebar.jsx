@@ -20,20 +20,12 @@ const data = {
   navMain: [
     {
       title: "Manage Business",
-      url: `${baseUrl}/admin-db/manage-business`,
+      url: `${baseUrl}/admin-db/manage-businesses`,
       icon: Bot,
       items: [
         {
-          title: "Add Business",
-          url: `${baseUrl}/admin-db/manage-business/add-business`,
-        },
-        {
           title: "View Businesses",
-          url: `${baseUrl}/admin-db/manage-business/view-businesses`,
-        },
-        {
-          title: "Delete Business",
-          url: `${baseUrl}/admin-db/manage-business/delete-business`,
+          url: `${baseUrl}/admin-db/manage-businesses`,
         },
       ],
     },
@@ -43,32 +35,32 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Ban Student",
-          url: `${baseUrl}/admin-db/manage-users/ban-user`,
-        },
-        {
-          title: "Kick Student",
-          url: `${baseUrl}/admin-db/manage-users/kick-user`,
-        },
-        {
-          title: "Manage Dubl-U-nes",
-          url: `${baseUrl}/admin-db/manage-users/manage-tokens`,
+          title: "Manage Students",
+          url: `${baseUrl}/admin-db/manage-users`,
         },
       ],
     },
     {
-      title: "Manage Raffle Partners",
+      title: "Manage Raffle",
       url: `${baseUrl}/admin-db/manage-raffle`,
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Upload Item",
+          title: "Add Raffle Partner",
+          url: `${baseUrl}/admin-db/manage-raffle/add-partner`,
+        },
+        {
+          title: "Manage Raffle Partners",
+          url: `${baseUrl}/admin-db/manage-raffle/manage-partners`,
+        },
+        {
+          title: "Add Raffle Items",
           url: `${baseUrl}/admin-db/manage-raffle/add-item`,
         },
         {
-          title: "Remove Item",
-          url: `${baseUrl}/admin-db/manage-raffle/remove-item`,
+          title: "Manage Raffle Items",
+          url: `${baseUrl}/admin-db/manage-raffle/manage-items`,
         },
       ],
     },

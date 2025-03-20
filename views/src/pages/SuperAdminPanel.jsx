@@ -19,7 +19,7 @@ export default function SuperAdminPanel() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="bg-[#333] md:w-[900px] text-center">
+      <SidebarInset className="bg-[#333] md:w-[1000px] text-center">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

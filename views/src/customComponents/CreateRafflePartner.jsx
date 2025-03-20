@@ -24,33 +24,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { use } from "react";
 
-export default function AddRaffleItem({ className, ...props }) {
+export default function CreateRafflePartner({ className, ...props }) {
   let [logo, setLogo] = useState(null);
-  let [item, setItem] = useState("");
-  let [description, setDescription] = useState("");
-  let [quantity, setQuantity] = useState(0);
+  let [organizationName, setOrganizationName] = useState("");
+  let [resourceCategory, setResourceCategory] = useState("");
   let [resourceLink, setResourceLink] = useState("");
-  let [rafflePartner, setRafflePartner] = useState("");
-  let [partnerList, setPartnerList] = useState([]);
-  useEffect(() => {
-    async function getRafflePartners() {
-      const partners = await axios.get(
-        `http://localhost:4000/api/raffle-partners`
-      );
-      setPartnerList(partners.data.partners);
-    }
-    getRafflePartners();
-  }, []);
-  function handleItemChange(e) {
-    setItem(e.target.value);
+
+  function handleOrganizationNameChange(e) {
+    setOrganizationName(e.target.value);
   }
-  function handleDescriptionChange(e) {
-    setDescription(e.target.value);
-  }
-  function handleQuantityChange(e) {
-    setQuantity(e.target.value);
+  function handleResourceCategoryChange(e) {
+    setResourceCategory(e.target.value);
   }
   function handleResourceLinkChange(e) {
     setResourceLink(e.target.value);
@@ -58,17 +43,12 @@ export default function AddRaffleItem({ className, ...props }) {
   function handleLogoChange(e) {
     setLogo(URL.createObjectURL(e.target.files[0]));
   }
-  function handleRafflePartnerChange(e) {
-    setRafflePartner(e.value);
-  }
   function handleSubmit() {
     let formData = {
-      item: item,
-      description: description,
-      quantity: quantity,
-      resourceLink: resourceLink,
+      organization_name: organizationName,
+      resource_link: resourceLink,
+      resource_category: resourceCategory,
       logo: logo,
-      rafflePartner: rafflePartner,
     };
     //send this to db
   }
@@ -79,46 +59,34 @@ export default function AddRaffleItem({ className, ...props }) {
     >
       <Card className="bg-[#333] text-white mb-4 border-transparent">
         <CardHeader>
-          <CardTitle className="text-2xl">New Item</CardTitle>
+          <CardTitle className="text-2xl">New Partner</CardTitle>
           <CardDescription className="text-gray-400">
-            Create New Item for Raffle
+            Create New Raffle Partner
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="item">Item</Label>
+                <Label htmlFor="name">Raffle Partner Name</Label>
                 <Input
                   className="text-white-400"
-                  id="item"
+                  id="organization_name"
                   type="text"
-                  placeholder="Item Name"
+                  placeholder="Partner Name"
                   required
-                  onChange={handleItemChange}
+                  onChange={handleOrganizationNameChange}
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="resource_category">Resource Category</Label>
                 <Input
                   className="text-white-400"
                   id="description"
                   type="textarea"
-                  placeholder="Item Description"
+                  placeholder="Resource Category"
                   required
-                  onChange={handleDescriptionChange}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="quantity">Quantity</Label>
-                <Input
-                  className="text-white-400"
-                  id="quantity"
-                  type="number"
-                  min="0"
-                  placeholder="Item Quantity"
-                  required
-                  onChange={handleQuantityChange}
+                  onChange={handleResourceCategoryChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -133,7 +101,7 @@ export default function AddRaffleItem({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="logo">Image</Label>
+                <Label htmlFor="logo">Logo</Label>
                 <Input
                   className="text-white-400"
                   id="logo"
@@ -141,25 +109,6 @@ export default function AddRaffleItem({ className, ...props }) {
                   onChange={handleLogoChange}
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="rafflePartner">Raffle Partner</Label>
-                <Select
-                  onValueChange={handleRafflePartnerChange}
-                  id="rafflePartner"
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Associated Raffle Partner" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {partnerList.map((partner) => (
-                      <SelectItem value={partner.organization_name}>
-                        {partner.organization_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <Button type="submit" className="w-full" onClick={handleSubmit}>
                 Create
               </Button>

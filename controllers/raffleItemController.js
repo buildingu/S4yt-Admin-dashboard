@@ -6,16 +6,18 @@ const createRaffleItem = async (req, res) => {
   const { item, description, quantity, logo, resourceLink, rafflePartner } =
     req.body;
   try {
-    if (!(await checkIfExists(RafflePartner, rafflePartner))) {
-      return res.status(404).json({ message: "Raffle Partner not Found" });
-    }
+    const associatedRafflePartner = await RafflePartner.findOne({
+      organization_name: rafflePartner,
+    });
 
     const raffleItem = new RaffleItem({
-      raffle_partner: rafflePartner,
+      raffle_partner: associatedRafflePartner._id,
+      raffle_partner_name: rafflePartner,
       name: item,
       description: description,
       image_src: logo,
       stock: quantity,
+      resource_link: resourceLink,
     });
     await raffleItem.save();
     res.status(200).json("New Raffle Item Created!");
@@ -32,14 +34,20 @@ const updateRaffleItem = async (req, res) => {
     }
     const { item, description, quantity, logo, resourceLink, rafflePartner } =
       req.body;
+    const associatedRafflePartner = await RafflePartner.findOne({
+      organization_name: rafflePartner,
+    });
+
     const updatedRaffleItem = await RaffleItem.findByIdAndUpdate(
       id,
       {
-        raffle_partner: rafflePartner,
+        raffle_partner: associatedRafflePartner._id,
+        raffle_partner_name: rafflePartner,
         name: item,
         description: description,
         image_src: logo,
         stock: quantity,
+        resource_link: resourceLink,
       },
       { new: true }
     );
@@ -64,4 +72,21 @@ const deleteRaffleItem = async (req, res) => {
   }
 };
 
-module.exports = { createRaffleItem, updateRaffleItem, deleteRaffleItem };
+const getRaffleItems = async (req, res) => {
+  try {
+    const items = await RaffleItem.find({ deleted: false });
+    if (!items || items.length === 0) {
+      return res.status(404).json({ message: "Items not found" });
+    }
+    res.status(200).json(items);
+  } catch (error) {
+    return res.status(500).json({ message: "Error Getting Items", error });
+  }
+};
+
+module.exports = {
+  createRaffleItem,
+  updateRaffleItem,
+  deleteRaffleItem,
+  getRaffleItems,
+};
