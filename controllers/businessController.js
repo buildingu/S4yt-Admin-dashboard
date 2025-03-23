@@ -2,7 +2,6 @@ const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
 
 exports.getBusinesses = async (req, res) => {
-    const id = req.params.id;
     try {
         const business = await Business.find({deleted: false });
         if (!business) return res.status(404).json({ message: 'Businesses not found' });
