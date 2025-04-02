@@ -1,96 +1,161 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Checkbox, TextField, Rating, Tabs, Tab, Button
+} from "@mui/material";
 
-function SubmitWinners({ className, ...props }) {
-    let [first, setFirst] = useState("");
-    let [second, setSecond] = useState("");
-    let [third, setThird] = useState("");
-    function handleFirstChange(e) {
-      setFirst(e.target.value);
-    }
-    function handleSecondChange(e) {
-      setSecond(e.target.value);
-    }
-    function handleThirdChange(e) {
-      setThird(e.target.value);
-    }
-    function handleSubmit() {
-      let info = {
-        firstID: first,
-        secondID: second,
-        thirdID: third,
-      };
-    }
-    return (
-      <div
-        className={cn("flex flex-col gap-6 border-transparent", className)}
-        {...props}
-      >
-        <Card className="bg-[#333] text-white mb-4 border-transparent">
-          <CardHeader>
-            <CardTitle className="text-2xl">Winners</CardTitle>
-            <CardDescription className="text-gray-400">
-              Submit the User IDs of the top 3 answers!
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="first">First Place</Label>
-                  <Input
-                    className="text-white-400"
-                    id="first"
-                    type="text"
-                    placeholder="Enter First Place ID"
-                    required
-                    onChange={handleFirstChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="second">Second Place</Label>
-                  <Input
-                    className="text-white-400"
-                    id="second"
-                    type="text"
-                    placeholder="Enter Second Place ID"
-                    required
-                    onChange={handleSecondChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="third">Third Place</Label>
-                  <Input
-                    className="text-white-400"
-                    id="third"
-                    type="text"
-                    placeholder="Enter Third Place ID"
-                    required
-                    onChange={handleThirdChange}
-                  />
-                </div>
-                <br />
-  
-                <Button type="submit" className="w-full" onClick={handleSubmit}>
-                  Create
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+const initialData = [
+  { id: 1, link: "https://example1.com", rating: 5, inputValue: 0 },
+  { id: 2, link: "https://example2.com", rating: 7, inputValue: 2 },
+  { id: 3, link: "https://example3.com", rating: 4, inputValue: 1 },
+];
+
+export default function SubmitWinners() {
+  const [tab, setTab] = useState(0);
+  const [data, setData] = useState(initialData);
+  const [selected, setSelected] = useState([]);
+  const [saved, setSaved] = useState([]);
+
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
+  };
+
+  const handleSelect = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
-  }
+  };
 
-  
-  export default SubmitWinners
+  const handleRatingChange = (id, newRating) => {
+    setData((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, rating: newRating } : item))
+    );
+  };
+
+  const handleInputChange = (id, value) => {
+    let num = Number(value);
+
+    if (num < 0) num = 0;
+    if (num > 6) num = 6;
+    setData((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, inputValue: num } : item))
+    );
+  };
+
+  const handleSave = () => {
+    setSaved([...saved, ...data.filter((item) => selected.includes(item.id))]);
+    setData(data.filter((item) => !selected.includes(item.id)));
+    setSelected([]);
+  };
+
+  const handleUnsave = (id) => {
+    const itemToUnsave = saved.find((item) => item.id === id);
+    setSaved(saved.filter((item) => item.id !== id));
+    setData([...data, itemToUnsave]);
+  };
+
+  return (
+    <Paper style={{ backgroundColor: "#333333", color: "#fff", padding: "20px" }}>
+      <Tabs value={tab} onChange={handleTabChange} centered>
+        <Tab label="Available Links" style={{ color: "#fff" }} />
+        <Tab label="Saved Links" style={{ color: "#fff" }} />
+      </Tabs>
+
+      {tab === 0 && (
+        <div style={{ overflowX: "disabled" }}> 
+         <TableContainer component={Paper} style={{ backgroundColor: "#333333", color: "#fff",  overflowX: "auto", maxWidth: "100%",}}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ color: "#fff" }}>Select</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Link</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Rating</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Input</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selected.includes(row.id)}
+                        onChange={() => handleSelect(row.id)}
+                        style={{ color: "#90caf9" }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <a href={row.link} target="_blank" rel="noopener noreferrer" style={{ color: "#90caf9" }}>
+                        {row.link}
+                      </a>
+                    </TableCell>
+                    <TableCell>
+                      <Rating
+                        value={row.rating}
+                        onChange={(event, newValue) => handleRatingChange(row.id, newValue)}
+                        sx={{ color: "white" }} 
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        type="number"
+                        value={row.inputValue}
+                        onChange={(e) => handleInputChange(row.id, e.target.value)}
+                        style={{ width: "100%", minWidth: "150px", backgroundColor: "#333" }}
+                        InputProps={{
+                          sx: { color: "white" },
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 6
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Button variant="contained" onClick={handleSave} disabled={selected.length === 0} style={{ margin: "20px 0px 20px 20px", backgroundColor: "#90caf9", color: "#000" }}>
+              Save Selected
+            </Button>
+          </TableContainer>
+        </div>
+      )}
+
+      {tab === 1 && (
+        <div style={{ overflowX: "auto" }}> 
+          <TableContainer component={Paper} style={{ backgroundColor: "#333333", color: "#fff",  overflowX: "auto", maxWidth: "100%"}}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ color: "#fff" }}>Link</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Rating</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Input</TableCell>
+                  <TableCell style={{ color: "#fff" }}>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {saved.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <a href={row.link} target="_blank" rel="noopener noreferrer" style={{ color: "#90caf9" }}>
+                        {row.link}
+                      </a>
+                    </TableCell>
+                    <TableCell>{row.rating}</TableCell>
+                    <TableCell>{row.inputValue}</TableCell>
+                    <TableCell>
+                      <Button variant="outlined" color="secondary" onClick={() => handleUnsave(row.id)} style={{ color: "#f48fb1", margin: "10px" }}>
+                        Unsave
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      )}
+
+    </Paper>
+  );
+}

@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
-import AddLearnAndEarnQuestion from "@/customComponents/AddLearnAndEarnQuestion";
 import SubmitWinners from "@/customComponents/SubmitWinners";
 import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
 import LearnAndEarnQuestions from "@/customComponents/LearnAndEarnQuestions";
@@ -24,12 +23,7 @@ function BusinessAdminPanel() {
           >
             You
           </TabsTrigger>
-          <TabsTrigger
-            value="addLearnAndEarnQuestions"
-            className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
-          >
-            Add Learn and Earn Questions
-          </TabsTrigger>
+        
           <TabsTrigger
             value="learnAndEarnQuestions"
             className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
@@ -52,9 +46,7 @@ function BusinessAdminPanel() {
         <TabsContent value="you">
           <EditYourInfo userType="business" />
         </TabsContent>
-        <TabsContent value="addLearnAndEarnQuestions">
-          <AddLearnAndEarnQuestion id={id}/>
-        </TabsContent>
+
         <TabsContent value="learnAndEarnQuestions">
          <LearnAndEarnQuestions id={id}/>
         </TabsContent>

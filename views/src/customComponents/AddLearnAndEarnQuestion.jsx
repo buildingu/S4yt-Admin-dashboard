@@ -17,90 +17,101 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useRef, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState, useRef } from "react";
 import ToastComponent from "@/components/ToastComponent";
+import { Padding } from "@mui/icons-material";
+
 function AddLearnAndEarnQuestion({ className, ...props }) {
-  let [question, setQuestion] = useState(""); // note of improvement this can be changed into an object so that onky one state variable is initialized
-  let [optionA, setOptionA] = useState("");
-  let [optionB, setOptionB] = useState("");
-  let [optionC, setOptionC] = useState("");
-  let [explanation, setExplanation] = useState("");
-  let [correct, setCorrect] = useState("");
+  const [formData, setFormData] = useState({
+    question: "",
+    optionA: "",
+    optionB: "",
+    optionC: "",
+    explanation: "",
+    correct: "",
+  });
+
   const [disabled, setDisabled] = useState(false);
+  const [open, setOpen] = useState(false); // Controls modal visibility
   const toastRef = useRef();
-  function handleQuestionChange(e) {
-    setQuestion(e.target.value);
-  }
-  function handleOptionAChange(e) {
-    setOptionA(e.target.value);
-  }
-  function handleOptionBChange(e) {
-    setOptionB(e.target.value);
-  }
-  function handleOptionCChange(e) {
-    setOptionC(e.target.value);
-  }
-  function handleCorrectChange(value) {
-    console.log(value);
-    setCorrect(value);
-  }
-  function handleExplanationChange(e) {
-    setExplanation(e.target.value);
-  }
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleCorrectChange = (value) => {
+    setFormData({ ...formData, correct: value });
+  };
+
   const clearInput = () => {
-    setQuestion("");
-    setOptionA("");
-    setOptionB("");
-    setOptionC("");
-    setCorrect("");
-    setExplanation("");
-  }
+    setFormData({
+      question: "",
+      optionA: "",
+      optionB: "",
+      optionC: "",
+      explanation: "",
+      correct: "",
+    });
+  };
+
   const countUpdates = async () => {
     const response = await axios.get(`/api/multiple-choice-count/${props.id}`);
-    if (response.data.count >= 3)
-      setDisabled(true);
-  }
+    if (response.data.count >= 3) setDisabled(true);
+  };
 
-
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let formData = {
-      question: question,
+    let submitData = {
+      question: formData.question,
       answers: {
         choices: {
-          "A": optionA,
-          "B": optionB,
-          "C": optionC,
+          A: formData.optionA,
+          B: formData.optionB,
+          C: formData.optionC,
         },
-        explanation: explanation,
-        correct: correct,
-      }
+        explanation: formData.explanation,
+        correct: formData.correct,
+      },
     };
+   
     try {
-      await axios.post(`/api/multiple-choice/${props.id}`, formData); // finishes first to get updsated count
+      const response = await axios.post(`/api/multiple-choice/${props.id}`, submitData);
+      console.log(response.data.newQuestion)
+      props.setQuestions((prev) => [
+        ...prev, 
+        response.data.newQuestion,      
+      ]);
       clearInput();
       toastRef.current.triggerToast();
       countUpdates();
+      setOpen(false); // Close modal after submission
     } catch (error) {
       console.error("Error submitting question:", error);
     }
-  }
+  };
 
   return (
-    <div
-      className={cn("flex flex-col gap-6 border-transparent", className)}
-      {...props}
-    >
-      <Card className="bg-[#333] text-white mb-4 border-transparent">
-        <CardHeader>
-          <CardTitle className="text-2xl">New Question</CardTitle>
-          <CardDescription className="text-gray-400">
-            Create New Learn and Earn Question
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Button to trigger modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <div className="w-full flex justify-end pt-5 pr-5 pb-5">
+          <Button style={{width:'25%', backgroundColor:'#18181b'}}>Create New Question</Button>
+          </div>
+        </DialogTrigger>
+        
+        {/* Modal Content */}
+        <DialogContent className="bg-[#333] text-white border-transparent">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">New Question</DialogTitle>
+            <CardDescription className="text-gray-400">
+              Create a New Learn and Earn Question
+            </CardDescription>
+          </DialogHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="question">Question</Label>
                 <Input
@@ -110,8 +121,8 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   type="text"
                   placeholder="Enter Question"
                   required
-                  value={question}
-                  onChange={handleQuestionChange}
+                  value={formData.question}
+                  onChange={handleChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -123,8 +134,8 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   type="text"
                   placeholder="Option A"
                   required
-                  value={optionA}
-                  onChange={handleOptionAChange}
+                  value={formData.optionA}
+                  onChange={handleChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -136,8 +147,8 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   type="text"
                   placeholder="Option B"
                   required
-                  value={optionB}
-                  onChange={handleOptionBChange}
+                  value={formData.optionB}
+                  onChange={handleChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -149,8 +160,8 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   type="text"
                   placeholder="Option C"
                   required
-                  value={optionC}
-                  onChange={handleOptionCChange}
+                  value={formData.optionC}
+                  onChange={handleChange}
                 />
               </div>
               <div className="grid gap-2 text-white">
@@ -160,10 +171,10 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   className="text-white"
                   onValueChange={handleCorrectChange}
                   disabled={disabled}
-                  value={correct}
+                  value={formData.correct}
                 >
                   <SelectTrigger className="text-white">
-                    <SelectValue />
+                    <SelectValue placeholder="Select Correct Answer" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="A">A</SelectItem>
@@ -181,22 +192,21 @@ function AddLearnAndEarnQuestion({ className, ...props }) {
                   type="text"
                   placeholder="Explanation"
                   required
-                  value={explanation}
-                  onChange={handleExplanationChange}
+                  value={formData.explanation}
+                  onChange={handleChange}
                 />
               </div>
-            </div>
-            <br />
+              <Button type="submit" className="w-full" disabled={disabled}>
+                Create
+              </Button>
+            </form>
+          </CardContent>
+        </DialogContent>
+      </Dialog>
 
-            <Button type="submit" className="w-full" onClick={handleSubmit} disabled={disabled}>
-              Create
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
       <ToastComponent ref={toastRef} description="New Learn and Earn question has been created" title="Learn and Earn" />
     </div>
   );
 }
 
-export default AddLearnAndEarnQuestion
+export default AddLearnAndEarnQuestion;
