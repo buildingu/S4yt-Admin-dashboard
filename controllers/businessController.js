@@ -1,4 +1,5 @@
 const Business = require('../models/business');
+const Answer = require('../models/answers');
 const { checkIfExists } = require('../utils/modelUtils');
 
 exports.getBusinesses = async (req, res) => {
@@ -11,6 +12,19 @@ exports.getBusinesses = async (req, res) => {
         res.status(500).json({ message: 'Error fetching businesses', error });
     }
 };
+exports.getBusinessAnswers = async (req, res) => {
+    try {
+        const { businessId } = req.params;
+        const answers = await Answer.find({ challenge_id: businessId })
+          .populate("user", "name email") 
+          .sort({ rating: -1 }); 
+    
+        res.status(200).json({ success: true, data: answers });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server error" });
+      }
+}
 
 exports.getBusinessById = async (req, res) => {
     const id = req.params.id;

@@ -5,9 +5,9 @@ import {
 } from "@mui/material";
 
 const initialData = [
-  { id: 1, link: "https://example1.com", rating: 5, inputValue: 0 },
-  { id: 2, link: "https://example2.com", rating: 7, inputValue: 2 },
-  { id: 3, link: "https://example3.com", rating: 4, inputValue: 1 },
+  { id: 1, link: "https://example1.com", rating: 5, cashPrize: 0 },
+  { id: 2, link: "https://example2.com", rating: 7, cashPrize: 2 },
+  { id: 3, link: "https://example3.com", rating: 4, cashPrize: 1 },
 ];
 
 export default function SubmitWinners() {
@@ -38,7 +38,7 @@ export default function SubmitWinners() {
     if (num < 0) num = 0;
     if (num > 6) num = 6;
     setData((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, inputValue: num } : item))
+      prev.map((item) => (item.id === id ? { ...item, cashPrize: num } : item))
     );
   };
 
@@ -98,7 +98,7 @@ export default function SubmitWinners() {
                     <TableCell>
                       <TextField
                         type="number"
-                        value={row.inputValue}
+                        value={row.cashPrize}
                         onChange={(e) => handleInputChange(row.id, e.target.value)}
                         style={{ width: "100%", minWidth: "150px", backgroundColor: "#333" }}
                         InputProps={{
@@ -142,7 +142,7 @@ export default function SubmitWinners() {
                       </a>
                     </TableCell>
                     <TableCell>{row.rating}</TableCell>
-                    <TableCell>{row.inputValue}</TableCell>
+                    <TableCell>{row.cashPrize}</TableCell>
                     <TableCell>
                       <Button variant="outlined" color="secondary" onClick={() => handleUnsave(row.id)} style={{ color: "#f48fb1", margin: "10px" }}>
                         Unsave
