@@ -26,8 +26,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://s4yt-admin-dashboard.vercel.app'],
+  origin: [
+    'http://localhost:3000',
+    'https://s4yt-admin-dashboard.vercel.app',
+    'https://admin.s4yt.org'
+  ],
 }));
+
 app.use(fileUpload());
 
 app.listen(port, () => {
