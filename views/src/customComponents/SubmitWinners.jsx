@@ -22,6 +22,9 @@ export default function SubmitWinners({ ...props }) {
     axios.get(`/api/winners/${businessId}`).then((response) => {
       setSaved(response.data);
     });
+    axios.get(`/api/business/${businessId}`).then((response)=>{
+      setPool(response.data.award_limit)
+    })
   }, [businessId]);
 
   const handleTabChange = (event, newValue) => {
@@ -64,7 +67,7 @@ export default function SubmitWinners({ ...props }) {
     if (awardMissing) {
       setAlertMessage("The answer must be given and award.");
       setAlertSeverity("error");
-      setTimeout(() => setAlertMessage(""), 5000);  // Clear alert after 5 seconds
+      setTimeout(() => setAlertMessage(""), 5000);  
       return;
     }
 
@@ -76,7 +79,7 @@ export default function SubmitWinners({ ...props }) {
     if (totalAward > pool) {
       setAlertMessage("Not enough funds in the cash pool.");
       setAlertSeverity("error");
-      setTimeout(() => setAlertMessage(""), 5000);  // Clear alert after 5 seconds
+      setTimeout(() => setAlertMessage(""), 5000);  
       return;
     }
 
@@ -92,16 +95,22 @@ export default function SubmitWinners({ ...props }) {
     axios.post(`/api/winners/${businessId}`, {
       winners: winnersPayload,
     });
+    axios.put(`/api/business/${businessId}`, { award_limit: (pool - totalAward) })
   };
 
   const handleUnsave = (_id) => {
     const itemToUnsave = saved.find((item) => item._id === _id);
     setPool((prev) => prev + (itemToUnsave.award || 0));
     setSaved(saved.filter((item) => item._id !== _id));
+    axios.put(`/api/business/${businessId}`, { award_limit: ( pool + (itemToUnsave.award || 0)) })
+    itemToUnsave.award = 0;
     setData([...data, itemToUnsave]);
 
     axios.delete(`/api/winners/${businessId}/${itemToUnsave.user}`)
+    
   };
+
+  const winnersCount = saved.length + selected.length;
 
   return (
     <Paper style={{ backgroundColor: "#333333", color: "#fff", padding: "20px" }}>
@@ -130,12 +139,12 @@ export default function SubmitWinners({ ...props }) {
               maxWidth: "100%",
             }}
           >
-            {pool > 0 && (
+            {pool > 0 && winnersCount < 5 && (
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleSave}
-                disabled={selected.length === 0}
+                disabled={selected.length === 0 || winnersCount >= 5}
                 style={{
                   margin: "20px 0px 20px 20px",
                   color: "#000",
@@ -147,10 +156,12 @@ export default function SubmitWinners({ ...props }) {
             <Table>
               <TableHead>
                 <TableRow>
+                {pool > 0 && winnersCount  < 5 && (
                   <TableCell style={{ color: "#fff" }}>Select</TableCell>
+                )}
                   <TableCell style={{ color: "#fff" }}>Link</TableCell>
                   <TableCell style={{ color: "#fff" }}>Rating</TableCell>
-                  {pool !== 0 && (
+                  {pool > 0 && winnersCount  < 5 && (
                     <TableCell style={{ color: "#fff" }}>Award</TableCell>
                   )}
                 </TableRow>
@@ -158,7 +169,7 @@ export default function SubmitWinners({ ...props }) {
               <TableBody>
                 {data.map((row) => (
                   <TableRow key={row._id}>
-                    {pool > 0 && (
+                    {pool > 0 && winnersCount  < 5 && (
                       <TableCell>
                         <Checkbox
                           checked={selected.includes(row._id)}
@@ -184,9 +195,10 @@ export default function SubmitWinners({ ...props }) {
                           handleRatingChange(row._id, newValue)
                         }
                         sx={{ color: "white" }}
-                        disabled={pool === 0}
+                        
                       />
                     </TableCell>
+                    {pool > 0 && winnersCount  < 5 && (
                     <TableCell>
                       <TextField
                         type="number"
@@ -209,6 +221,7 @@ export default function SubmitWinners({ ...props }) {
                         }}
                       />
                     </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

@@ -54,7 +54,7 @@ function BusinessAdminPanel() {
           <SubmitWinners id={id}/>
         </TabsContent>
         <TabsContent value="confirmAttendance">
-          <ConfirmAttendance />
+          <ConfirmAttendance id={id}/>
         </TabsContent>
       </Tabs>
     </div>

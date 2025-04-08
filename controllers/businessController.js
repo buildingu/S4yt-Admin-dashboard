@@ -30,29 +30,36 @@ exports.getBusinessById = async (req, res) => {
 
 exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
-    const { name, description, logo, question, youtubeLink } = req.body;
-    try {
-        
-        if (!(await checkIfExists(Business, id)))
-            return res.status(404).json({ message: 'Business not found or already deleted' });
+    const { name, description, logo, question, youtubeLink, award_limit, attendance_confirm } = req.body;
 
-        const updatedBusiness = await Business.findByIdAndUpdate(
-            id,
-            {
-                name: name,
-                description: description,
-                logo_s4yt: logo,
-                question_main: question,
-                youtube_link: youtubeLink
-            },
-            { new: true }
-        );
+    try {
+        const businessExists = await checkIfExists(Business, id);
+        if (!businessExists) {
+            return res.status(404).json({ message: 'Business not found or already deleted' });
+        }
+
+        const updateFields = {
+            ...(name && { name }),
+            ...(description && { description }),
+            ...(logo && { logo_s4yt: logo }),
+            ...(question && { question_main: question }),
+            ...(youtubeLink && { youtube_link: youtubeLink }),
+            ...(award_limit !== undefined && { award_limit: award_limit }),
+            ...(attendance_confirm !== undefined && { attendance_confirm: attendance_confirm })
+        };
+
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ message: 'No valid fields provided for update' });
+        }
+
+        const updatedBusiness = await Business.findByIdAndUpdate(id, updateFields, { new: true });
 
         res.status(200).json(updatedBusiness);
     } catch (error) {
         res.status(500).json({ message: 'Error updating business', error });
     }
 };
+
 
 exports.deleteBusiness = async (req, res) => {
     const id = req.params.id;
