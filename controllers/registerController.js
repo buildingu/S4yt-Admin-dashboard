@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    if (!name || !email || !password) {
+    const { businessName, email, password, role } = req.body;
+    if (!businessName || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     const existingUser = await User.findOne({ email });
@@ -16,7 +16,7 @@ exports.registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashedPassword });
-    const business = new Business({ business_user_id: user._id, business_name: name })
+    const business = new Business({ business_user_id: user._id, business_name: businessName })
 
     await user.save();
     await business.save();

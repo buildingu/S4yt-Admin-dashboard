@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/business-db/:id" element={<BusinessAdminPanel />} />
+          <Route path="/business-db/:id" element={<ProtectedRoute><BusinessAdminPanel /></ProtectedRoute>} />
           <Route path="/admin-db" element={<SuperAdminPanel />}>
             <Route path="manage-businesses" element={<AdminBusinessView />} />
             <Route path="manage-users" element={<AdminStudentView />} />

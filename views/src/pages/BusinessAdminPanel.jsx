@@ -5,11 +5,17 @@ import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
 import SubmitWinners from "@/customComponents/SubmitWinners";
 import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
 import LearnAndEarnQuestions from "@/customComponents/LearnAndEarnQuestions";
-
+import { useContext } from "react";
+import { AuthContext } from "../auth/AuthContext";
 
 
 function BusinessAdminPanel() {
-  const {id} = useParams();
+  const { id } = useParams();
+  const { logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout(); // Call the logout function
+    navigate("/login"); // Redirect to login page
+  };
   return (
     <div>
       <Tabs
@@ -23,7 +29,7 @@ function BusinessAdminPanel() {
           >
             You
           </TabsTrigger>
-        
+
           <TabsTrigger
             value="learnAndEarnQuestions"
             className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
@@ -42,19 +48,26 @@ function BusinessAdminPanel() {
           >
             Confirm Attendance
           </TabsTrigger>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-2 mb-5 text-sm rounded-xl mt-4"
+          >
+            Logout
+          </button>
+
         </TabsList>
         <TabsContent value="you">
-          <EditYourInfo userType="business" id={id}/>
+          <EditYourInfo userType="business" id={id} />
         </TabsContent>
 
         <TabsContent value="learnAndEarnQuestions">
-         <LearnAndEarnQuestions id={id}/>
+          <LearnAndEarnQuestions id={id} />
         </TabsContent>
         <TabsContent value="submitWinners">
-          <SubmitWinners id={id}/>
+          <SubmitWinners id={id} />
         </TabsContent>
         <TabsContent value="confirmAttendance">
-          <ConfirmAttendance id={id}/>
+          <ConfirmAttendance id={id} />
         </TabsContent>
       </Tabs>
     </div>

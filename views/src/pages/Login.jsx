@@ -33,7 +33,7 @@ function Login({ className, ...props }) {
       const response = await axios.post('/api/login', data);
       if(response.status === 200){
         login(response.data.userData, response.data.token);
-        navigate(`/business-db/${user.businessId}`);
+        navigate(`/business-db/${user._id}`);
       }
       console.log("Sending data to backend:", {
         email: email,
@@ -108,7 +108,7 @@ function Login({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{"   "}
-              <a href="#" className="underline underline-offset-4">
+              <a href="/signup" className="underline underline-offset-4">
                 Sign up
               </a>
             </div>

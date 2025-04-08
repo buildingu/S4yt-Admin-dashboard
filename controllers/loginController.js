@@ -16,17 +16,17 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid password' });
     }
-    const business =  user.role == "Business"? await Business.findOne({business_user_id: user._id}).select('_id'): null;
-    const token = jwt.sign({ userId: user._id, roles: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const business =  user.roles[0] == "business"? await Business.findOne({business_user_id: user._id}).select('_id'): null;
+    const token = jwt.sign({ userId: user._id, roles: user.roles[0] }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const userData = { //no password
-      _id: user._id,
+      _id: business._id,
       email: user.email,
       role: user.roles,
       businessName: business?.business_name, 
       businessId: business?._id
     }
-    
+    console.log(userData)
 
     res.status(200).json({ token, userData});
   } catch (error) {

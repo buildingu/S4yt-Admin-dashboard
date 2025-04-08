@@ -24,7 +24,7 @@ function Signup({ className, ...props }) {
   const validate = () => {
     let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+    //const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
     if (!formData.businessName.trim()) {
       tempErrors.businessName = "Business name is required.";
@@ -32,10 +32,10 @@ function Signup({ className, ...props }) {
     if (!emailRegex.test(formData.email)) {
       tempErrors.email = "Enter a valid email.";
     }
-    if (!passwordRegex.test(formData.password)) {
+    /*if (!passwordRegex.test(formData.password)) {
       tempErrors.password =
         "Password must be at least 8 characters, include one uppercase letter and one number.";
-    }
+    }*/
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
@@ -117,7 +117,7 @@ function Signup({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <a href="#" className="underline underline-offset-4 text-[#F9EB02]">
+              <a href="/login" className="underline underline-offset-4 text-[#F9EB02]">
                 Login
               </a>
             </div>

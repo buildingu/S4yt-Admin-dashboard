@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png"
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/login"); // Navigates to the login page
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#242424] px-6">
       <div className="mb-8">
@@ -17,6 +22,7 @@ function Home() {
 
       <Button
         className="bg-[#F9EB02] text-[#242424] px-6 py-3 rounded-2xl font-semibold hover:bg-[#d4c102] transition transform hover:scale-105"
+        onClick={handleClick}
       >
         Get Started
       </Button>
