@@ -23,6 +23,13 @@ function Login({ className, ...props }) {
   
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
+
+  useEffect(() => {
+    if (user && user._id) {
+      navigate(`/business-db/${user._id}`);
+    }
+  }, [user]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
@@ -33,7 +40,6 @@ function Login({ className, ...props }) {
       const response = await axios.post('/api/login', data);
       if(response.status === 200){
         login(response.data.userData, response.data.token);
-        navigate(`/business-db/${userData._id}`);
       }
       console.log("Sending data to backend:", {
         email: email,

@@ -17,14 +17,16 @@ export default function SubmitWinners({ ...props }) {
 
   useEffect(() => {
     axios.get(`/api/answers/${businessId}`).then((response) => {
-      setData(response.data);
+      const responseData = response.data;
+      setData(Array.isArray(responseData) ? responseData : []);
     });
     axios.get(`/api/winners/${businessId}`).then((response) => {
-      setSaved(response.data);
+      const responseData = response.data;
+      setSaved(Array.isArray(responseData) ? responseData : []);
     });
-    axios.get(`/api/business/${businessId}`).then((response)=>{
-      setPool(response.data.award_limit)
-    })
+    axios.get(`/api/business/${businessId}`).then((response) => {
+      setPool(response.data.award_limit || 0);
+    });
   }, [businessId]);
 
   const handleTabChange = (event, newValue) => {
@@ -43,9 +45,7 @@ export default function SubmitWinners({ ...props }) {
         item._id === _id ? { ...item, rating: newRating } : item
       )
     );
-    axios
-      .post(`/api/answers/${_id}`, { rating: newRating })
-      .catch(() => {});
+    axios.post(`/api/answers/${_id}`, { rating: newRating }).catch(() => {});
   };
 
   const handleInputChange = (_id, value) => {
@@ -87,27 +87,31 @@ export default function SubmitWinners({ ...props }) {
     setSaved([...saved, ...selectedRows]);
     setData(data.filter((item) => !selected.includes(item._id)));
     setSelected([]);
+
     const winnersPayload = selectedRows.map(({ user, award }) => ({
-      user,  
+      user,
       award,
     }));
-    console.log('Winners Payload:', winnersPayload);
-    axios.post(`/api/winners/${businessId}`, {
-      winners: winnersPayload,
-    });
-    axios.put(`/api/business/${businessId}`, { award_limit: (pool - totalAward) })
+
+    axios.post(`/api/winners/${businessId}`, { winners: winnersPayload });
+    axios.put(`/api/business/${businessId}`, { award_limit: (pool - totalAward) });
   };
 
   const handleUnsave = (_id) => {
     const itemToUnsave = saved.find((item) => item._id === _id);
+    if (!itemToUnsave) return;
+
     setPool((prev) => prev + (itemToUnsave.award || 0));
     setSaved(saved.filter((item) => item._id !== _id));
-    axios.put(`/api/business/${businessId}`, { award_limit: ( pool + (itemToUnsave.award || 0)) })
+
+    axios.put(`/api/business/${businessId}`, {
+      award_limit: pool + (itemToUnsave.award || 0),
+    });
+
     itemToUnsave.award = 0;
     setData([...data, itemToUnsave]);
 
-    axios.delete(`/api/winners/${businessId}/${itemToUnsave.user}`)
-    
+    axios.delete(`/api/winners/${businessId}/${itemToUnsave.user}`);
   };
 
   const winnersCount = saved.length + selected.length;
@@ -128,7 +132,7 @@ export default function SubmitWinners({ ...props }) {
         <h3 className="text-xl font-semibold">Cash Pool: ${pool.toFixed(2)}</h3>
       </div>
 
-      {tab === 0 && (
+      {tab === 0 && Array.isArray(data) && data.length > 0 && (
         <div>
           <TableContainer
             component={Paper}
@@ -156,12 +160,12 @@ export default function SubmitWinners({ ...props }) {
             <Table>
               <TableHead>
                 <TableRow>
-                {pool > 0 && winnersCount  < 5 && (
-                  <TableCell style={{ color: "#fff" }}>Select</TableCell>
-                )}
+                  {pool > 0 && winnersCount < 5 && (
+                    <TableCell style={{ color: "#fff" }}>Select</TableCell>
+                  )}
                   <TableCell style={{ color: "#fff" }}>Link</TableCell>
                   <TableCell style={{ color: "#fff" }}>Rating</TableCell>
-                  {pool > 0 && winnersCount  < 5 && (
+                  {pool > 0 && winnersCount < 5 && (
                     <TableCell style={{ color: "#fff" }}>Award</TableCell>
                   )}
                 </TableRow>
@@ -169,7 +173,7 @@ export default function SubmitWinners({ ...props }) {
               <TableBody>
                 {data.map((row) => (
                   <TableRow key={row._id}>
-                    {pool > 0 && winnersCount  < 5 && (
+                    {pool > 0 && winnersCount < 5 && (
                       <TableCell>
                         <Checkbox
                           checked={selected.includes(row._id)}
@@ -177,7 +181,6 @@ export default function SubmitWinners({ ...props }) {
                         />
                       </TableCell>
                     )}
-
                     <TableCell>
                       <a
                         href={row.submission_link}
@@ -195,32 +198,31 @@ export default function SubmitWinners({ ...props }) {
                           handleRatingChange(row._id, newValue)
                         }
                         sx={{ color: "white" }}
-                        
                       />
                     </TableCell>
-                    {pool > 0 && winnersCount  < 5 && (
-                    <TableCell>
-                      <TextField
-                        type="number"
-                        value={row.award || ""}
-                        onChange={(e) =>
-                          handleInputChange(row._id, e.target.value)
-                        }
-                        style={{
-                          width: "100%",
-                          minWidth: "150px",
-                          backgroundColor: "#333",
-                        }}
-                        disabled={pool === 0}
-                        InputProps={{
-                          sx: { color: "white" },
-                        }}
-                        inputProps={{
-                          min: 0,
-                          max: 6,
-                        }}
-                      />
-                    </TableCell>
+                    {pool > 0 && winnersCount < 5 && (
+                      <TableCell>
+                        <TextField
+                          type="number"
+                          value={row.award || ""}
+                          onChange={(e) =>
+                            handleInputChange(row._id, e.target.value)
+                          }
+                          style={{
+                            width: "100%",
+                            minWidth: "150px",
+                            backgroundColor: "#333",
+                          }}
+                          disabled={pool === 0}
+                          InputProps={{
+                            sx: { color: "white" },
+                          }}
+                          inputProps={{
+                            min: 0,
+                            max: 6,
+                          }}
+                        />
+                      </TableCell>
                     )}
                   </TableRow>
                 ))}

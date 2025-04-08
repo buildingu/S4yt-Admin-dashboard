@@ -16,7 +16,7 @@ exports.getBusinessAnswers = async (req, res) => {
     const challenge = await Challenge.findOne({ business: new mongoose.Types.ObjectId(businessId) });
 
     if (!challenge || challenge.length === 0)
-      return res.status(404).json({ message: "No challenge found for this business" });
+      return res.status(200).json({ message: "No challenge found for this business" });
 
     const winnerUserIds = business.winners.map(winner => winner.user);
 
@@ -43,7 +43,6 @@ exports.getBusinessAnswers = async (req, res) => {
 
     res.status(200).json(answers);
   } catch (error) {
-    console.error('Error fetching business answers:', error);
     res.status(500).json({ message: 'Error fetching business answers', error });
   }
 };

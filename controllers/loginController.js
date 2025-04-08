@@ -26,7 +26,6 @@ exports.loginUser = async (req, res) => {
       businessName: business?.business_name, 
       businessId: business?._id
     }
-    console.log(userData)
 
     res.status(200).json({ token, userData});
   } catch (error) {

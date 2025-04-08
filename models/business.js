@@ -13,6 +13,7 @@ const businessSchema = new mongoose.Schema({
       correct: String
     }],
     youtube_link: { type: String },
+    title: String,
     logo: { type: String },
     winners: [{_id: false, user: mongoose.Schema.Types.ObjectId,  award: Number}],
     attendance_confirm: { type: Boolean, default: false },

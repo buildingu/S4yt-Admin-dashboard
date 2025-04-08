@@ -77,11 +77,13 @@ export default function EditYourInfo({ className, userType, ...props }) {
       name: name,
       description: description,
       logo: logo,
+      title: title,
       question: question,
       youtubeLink: ytLink,
     };
     //
     axios.put(`/api/business/${id}`, formData)
+    axios.put(`/api/challenge/${id}`, {title: title, description: description})
     toastRef.current.triggerToast();
   }
   if (isLoading) return <p>Loading...</p>

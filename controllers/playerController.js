@@ -86,7 +86,6 @@ const getWinners = async (req, res) => {
       award: winner.award,
     }));
 
-    console.log(winnerUserAwards); 
     const winnersAnswers = await Answer.find({ user: { $in: winnerUserAwards.map(w => w.user) } })
       .select("submission_link user rating");
 
@@ -102,7 +101,6 @@ const getWinners = async (req, res) => {
 
     res.status(200).json(winnersData);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Error fetching Winners from Users', error });
   }
 };
@@ -158,7 +156,6 @@ const deleteWinners = async (req, res) => {
 
     res.status(200).json({ message: "Winner successfully removed" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Error deleting winner', error });
   }
 };

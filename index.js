@@ -11,6 +11,7 @@ const superAdminRouter = require("./routes/superAdminRoute");
 const multipleChoiceRouter = require('./routes/multipleChoiceRoute');
 const playeRouter = require('./routes/playerRoute');
 const answerRouter = require('./routes/answerRoute');
+const challengeRouter = require('./routes/challengeRoute');
 
 
 dotenv.config();
@@ -46,3 +47,4 @@ app.use("/api", superAdminRouter);
 app.use('/api', multipleChoiceRouter);
 app.use('/api', playeRouter);
 app.use('/api', answerRouter);
+app.use('/api', challengeRouter);

@@ -30,7 +30,7 @@ exports.getBusinessById = async (req, res) => {
 
 exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
-    const { name, description, logo, question, youtubeLink, award_limit, attendance_confirm } = req.body;
+    const { name, description, logo, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
 
     try {
         const businessExists = await checkIfExists(Business, id);
@@ -43,6 +43,7 @@ exports.updateBusiness = async (req, res) => {
             ...(description && { description }),
             ...(logo && { logo_s4yt: logo }),
             ...(question && { question_main: question }),
+            ...(title && { title }),
             ...(youtubeLink && { youtube_link: youtubeLink }),
             ...(award_limit !== undefined && { award_limit: award_limit }),
             ...(attendance_confirm !== undefined && { attendance_confirm: attendance_confirm })
@@ -53,6 +54,7 @@ exports.updateBusiness = async (req, res) => {
         }
 
         const updatedBusiness = await Business.findByIdAndUpdate(id, updateFields, { new: true });
+        console.log(REQ)
 
         res.status(200).json(updatedBusiness);
     } catch (error) {
