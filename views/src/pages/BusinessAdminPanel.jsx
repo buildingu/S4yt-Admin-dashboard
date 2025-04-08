@@ -1,36 +1,15 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseUrl } from "@/API";
-import ToastComponent from "@/components/ToastComponent";
 import EditYourInfo from "@/customComponents/BusinessUpdateInfo";
-import AddLearnAndEarnQuestion from "@/customComponents/AddLearnAndEarnQuestion";
 import SubmitWinners from "@/customComponents/SubmitWinners";
 import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
+import LearnAndEarnQuestions from "@/customComponents/LearnAndEarnQuestions";
 
 
 
 function BusinessAdminPanel() {
+  const {id} = useParams();
   return (
     <div>
       <Tabs
@@ -44,12 +23,7 @@ function BusinessAdminPanel() {
           >
             You
           </TabsTrigger>
-          <TabsTrigger
-            value="addLearnAndEarnQuestions"
-            className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
-          >
-            Add Learn and Earn Questions
-          </TabsTrigger>
+        
           <TabsTrigger
             value="learnAndEarnQuestions"
             className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
@@ -70,17 +44,14 @@ function BusinessAdminPanel() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="you">
-          <EditYourInfo userType="business" />
+          <EditYourInfo userType="business" id={id}/>
         </TabsContent>
-        <TabsContent value="addLearnAndEarnQuestions">
-          <AddLearnAndEarnQuestion />
-        </TabsContent>
+
         <TabsContent value="learnAndEarnQuestions">
-          {/* do a forEach for learnAndEarnQuestions from the db data to render out as these blocks */}
-          {/* <LearnAndEarnQuestion item="placeholderItem" description="placeholderDescription" /> */}
+         <LearnAndEarnQuestions id={id}/>
         </TabsContent>
         <TabsContent value="submitWinners">
-          <SubmitWinners />
+          <SubmitWinners id={id}/>
         </TabsContent>
         <TabsContent value="confirmAttendance">
           <ConfirmAttendance />

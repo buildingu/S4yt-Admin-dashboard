@@ -14,8 +14,10 @@ const businessSchema = new mongoose.Schema({
     }],
     youtube_link: { type: String },
     logo: { type: String },
-    winners: [{ type: mongoose.Schema.Types.ObjectId }],
+    winners: [{_id: false, user: mongoose.Schema.Types.ObjectId,  award: Number}],
     attendance_confirm: { type: Boolean, default: false },
+    award_limit: Number,
+    awarded_total: Number,
     deleted: { type: Boolean, default: false}
   }, { timestamps: true });
   

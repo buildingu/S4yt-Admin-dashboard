@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,141 +17,196 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState, useRef } from "react";
+import ToastComponent from "@/components/ToastComponent";
+import { Padding } from "@mui/icons-material";
+
 function AddLearnAndEarnQuestion({ className, ...props }) {
-    let [question, setQuestion] = useState("");
-    let [optionA, setOptionA] = useState("");
-    let [optionB, setOptionB] = useState("");
-    let [optionC, setOptionC] = useState("");
-    let [explanation, setExplanation] = useState("");
-    let [correct, setCorrect] = useState("");
-    function handleQuestionChange(e) {
-      setItem(e.target.value);
+  const [formData, setFormData] = useState({
+    question: "",
+    optionA: "",
+    optionB: "",
+    optionC: "",
+    explanation: "",
+    correct: "",
+  });
+
+  const [disabled, setDisabled] = useState(false);
+  const [open, setOpen] = useState(false); // Controls modal visibility
+  const toastRef = useRef();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleCorrectChange = (value) => {
+    setFormData({ ...formData, correct: value });
+  };
+
+  const clearInput = () => {
+    setFormData({
+      question: "",
+      optionA: "",
+      optionB: "",
+      optionC: "",
+      explanation: "",
+      correct: "",
+    });
+  };
+
+  const countUpdates = async () => {
+    const response = await axios.get(`/api/multiple-choice-count/${props.id}`);
+    if (response.data.count >= 3) setDisabled(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let submitData = {
+      question: formData.question,
+      answers: {
+        choices: {
+          A: formData.optionA,
+          B: formData.optionB,
+          C: formData.optionC,
+        },
+        explanation: formData.explanation,
+        correct: formData.correct,
+      },
+    };
+   
+    try {
+      const response = await axios.post(`/api/multiple-choice/${props.id}`, submitData);
+      console.log(response.data.newQuestion)
+      props.setQuestions((prev) => [
+        ...prev, 
+        response.data.newQuestion,      
+      ]);
+      clearInput();
+      toastRef.current.triggerToast();
+      countUpdates();
+      setOpen(false); // Close modal after submission
+    } catch (error) {
+      console.error("Error submitting question:", error);
     }
-    function handleOptionAChange(e) {
-      setQuestion(e.target.value);
-    }
-    function handleOptionBChange(e) {
-      setOptionA(e.target.value);
-    }
-    function handleOptionCChange(e) {
-      setOptionB(e.target.value);
-    }
-    function handleCorrectChange(e) {
-      setOptionC(e.target.value);
-    }
-    function handleExplanationChange(e) {
-      setExplanation(e.target.value);
-    }
-    function handleSubmit() {
-      let formData = {
-        question: question,
-        optionA: optionA,
-        optionB: optionB,
-        optionC: optionC,
-        explanation: explanation,
-        correct: correct,
-      };
-      //send this to db
-    }
-    return (
-      <div
-        className={cn("flex flex-col gap-6 border-transparent", className)}
-        {...props}
-      >
-        <Card className="bg-[#333] text-white mb-4 border-transparent">
-          <CardHeader>
-            <CardTitle className="text-2xl">New Question</CardTitle>
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Button to trigger modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <div className="w-full flex justify-end pt-5 pr-5 pb-5">
+          <Button style={{width:'25%', backgroundColor:'#18181b'}}>Create New Question</Button>
+          </div>
+        </DialogTrigger>
+        
+        {/* Modal Content */}
+        <DialogContent className="bg-[#333] text-white border-transparent">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">New Question</DialogTitle>
             <CardDescription className="text-gray-400">
-              Create New Learn and Earn Question
+              Create a New Learn and Earn Question
             </CardDescription>
-          </CardHeader>
+          </DialogHeader>
+
           <CardContent>
-            <form>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="question">Question</Label>
-                  <Input
-                    className="text-white-400"
-                    id="question"
-                    type="text"
-                    placeholder="Enter Question"
-                    required
-                    onChange={handleQuestionChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="optionA">Option A</Label>
-                  <Input
-                    className="text-white-400"
-                    id="optionA"
-                    type="text"
-                    placeholder="Option A"
-                    required
-                    onChange={handleOptionAChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="optionB">Option B</Label>
-                  <Input
-                    className="text-white-400"
-                    id="optionB"
-                    type="text"
-                    placeholder="Option B"
-                    required
-                    onChange={handleOptionBChange}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="optionC">Option C</Label>
-                  <Input
-                    className="text-white-400"
-                    id="optionC"
-                    type="text"
-                    placeholder="Option C"
-                    required
-                    onChange={handleOptionCChange}
-                  />
-                </div>
-                <div className="grid gap-2 text-white-400">
-                  <Label htmlFor="correct">Correct Answer</Label>
-                  <Select
-                    id="correct"
-                    className="text-white-400"
-                    onValueChange={handleCorrectChange}
-                  >
-                    <SelectTrigger className="text-white-400">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A">A</SelectItem>
-                      <SelectItem value="B">B</SelectItem>
-                      <SelectItem value="C">C</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="explanation">Explanation</Label>
-                  <Input
-                    className="text-white-400"
-                    id="explanation"
-                    type="text"
-                    placeholder="Explanation"
-                    required
-                    onChange={handleExplanationChange}
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="question">Question</Label>
+                <Input
+                  disabled={disabled}
+                  className="text-white"
+                  id="question"
+                  type="text"
+                  placeholder="Enter Question"
+                  required
+                  value={formData.question}
+                  onChange={handleChange}
+                />
               </div>
-              <br />
-  
-              <Button type="submit" className="w-full" onClick={handleSubmit}>
+              <div className="grid gap-2">
+                <Label htmlFor="optionA">Option A</Label>
+                <Input
+                  disabled={disabled}
+                  className="text-white"
+                  id="optionA"
+                  type="text"
+                  placeholder="Option A"
+                  required
+                  value={formData.optionA}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="optionB">Option B</Label>
+                <Input
+                  disabled={disabled}
+                  className="text-white"
+                  id="optionB"
+                  type="text"
+                  placeholder="Option B"
+                  required
+                  value={formData.optionB}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="optionC">Option C</Label>
+                <Input
+                  disabled={disabled}
+                  className="text-white"
+                  id="optionC"
+                  type="text"
+                  placeholder="Option C"
+                  required
+                  value={formData.optionC}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="grid gap-2 text-white">
+                <Label htmlFor="correct">Correct Answer</Label>
+                <Select
+                  id="correct"
+                  className="text-white"
+                  onValueChange={handleCorrectChange}
+                  disabled={disabled}
+                  value={formData.correct}
+                >
+                  <SelectTrigger className="text-white">
+                    <SelectValue placeholder="Select Correct Answer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A">A</SelectItem>
+                    <SelectItem value="B">B</SelectItem>
+                    <SelectItem value="C">C</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="explanation">Explanation</Label>
+                <Input
+                  disabled={disabled}
+                  className="text-white"
+                  id="explanation"
+                  type="text"
+                  placeholder="Explanation"
+                  required
+                  value={formData.explanation}
+                  onChange={handleChange}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={disabled}>
                 Create
               </Button>
             </form>
           </CardContent>
-        </Card>
-      </div>
-    );
-  }
+        </DialogContent>
+      </Dialog>
 
-export default AddLearnAndEarnQuestion
+      <ToastComponent ref={toastRef} description="New Learn and Earn question has been created" title="Learn and Earn" />
+    </div>
+  );
+}
+
+export default AddLearnAndEarnQuestion;

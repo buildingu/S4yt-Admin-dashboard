@@ -12,46 +12,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
 import ToastComponent from "@/components/ToastComponent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseUrl } from "@/API";
+import { useNavigate } from "react-router-dom";
 
 export default function EditYourInfo({ className, userType, ...props }) {
-  // let [initialName, initialDescription] = await useEffect(async () => {
-  //   let iName = await fetch("#");
-  //   let iDescription = await fetch("#");
-  //   let iNameJson = await iName.json();
-  //   let iDescriptionJson = await iDescription.json();
-  //   return [iNameJson.toString(), iDescriptionJson.toString()];
-  // });
+
   const [logo, setLogo] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
+  const [title, setTitle] = useState("");
   const [ytLink, setYtLink] = useState("");
-  const {id} = useParams();
+  const id  = props.id;
   const toastRef = useRef();
+  const Navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchBusinessInfo = async () => {
-    const response = await axios.get(`/api/business/${id}`)
-    setName(response.data.business_name);
-    setDescription(response.data.description);
-    setQuestion(response.data.question_main);
-    setYtLink(response.data.youtube_link);
+    try {
+      const response = await axios.get(`/api/business/${id}`); //redirect to prev page if the id of the business doesn't exist
+      console.log(response.data)
+      if (response.status !== 200) {
+        Navigate(-1);
+      }
+      setName(response.data.business_name);
+      setDescription(response.data.description);
+      setQuestion(response.data.question_main);
+      setYtLink(response.data.youtube_link);
+      setTitle(response.data.title);
+      setIsLoading(false);
+    } catch (error) {
+      Navigate(-1);
+    }
+
+
   }
 
   useEffect(() => {
-    fetchBusinessInfo();
-  }, [])
+    if(id)fetchBusinessInfo();
+  }, [id])
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -67,7 +66,11 @@ export default function EditYourInfo({ className, userType, ...props }) {
   function handleYTLinkChange(e) {
     setYtLink(e.target.value);
   }
-  
+
+  function handleTitleChange(e) {
+    setTitle(e.target.value);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     let formData = {
@@ -81,7 +84,8 @@ export default function EditYourInfo({ className, userType, ...props }) {
     axios.put(`/api/business/${id}`, formData)
     toastRef.current.triggerToast();
   }
-
+  if (isLoading) return <p>Loading...</p>
+  console.log(name)
   return (
     <div
       className={cn("flex flex-col gap-6 border-transparent", className)}
@@ -108,7 +112,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   id="name"
                   type="text"
                   placeholder="Your Business Name"
-                  defaultValue={name}
+                  value={name}
                   required
                   onChange={handleNameChange}
                 />
@@ -122,7 +126,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   placeholder="Your Business Description"
                   required
                   onChange={handleDescriptionChange}
-                 defaultValue={description}
+                  value={description}
                 />
               </div>
               <div className="grid gap-2">
@@ -142,7 +146,18 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your Question"
                   onChange={handleQuestionChange}
-                  defaultValue={question}
+                  value={question}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  className="text-white-400"
+                  id="title"
+                  type="text"
+                  placeholder="Your Question Title"
+                  onChange={handleTitleChange}
+                  value={title}
                 />
               </div>
               <div className="grid gap-2">
@@ -153,7 +168,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   type="text"
                   placeholder="Your YouTube Link"
                   onChange={handleYTLinkChange}
-                  defaultValue={ytLink}
+                  value={ytLink}
                 />
               </div>
               <Button type="submit" className="w-full" onClick={handleSubmit} disabled={!id}>

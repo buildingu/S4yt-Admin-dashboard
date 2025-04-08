@@ -1,4 +1,4 @@
-const { Document, model, Schema, Types } = require("mongoose");
+const { model, Schema } = require("mongoose");
 const userRoles = ["Admin", "Player", "Business"];
 const userSchema = new Schema(
   {

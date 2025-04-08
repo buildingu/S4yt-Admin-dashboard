@@ -8,6 +8,10 @@ const loginRouter = require("./routes/loginRoute");
 const registerRouter = require("./routes/registerRoute");
 const businessRouter = require("./routes/businessRoute");
 const superAdminRouter = require("./routes/superAdminRoute");
+const multipleChoiceRouter = require('./routes/multipleChoiceRoute');
+const playeRouter = require('./routes/playerRoute');
+const answerRouter = require('./routes/answerRoute');
+
 
 dotenv.config();
 
@@ -32,3 +36,6 @@ app.use("/api", loginRouter);
 app.use("/api", registerRouter);
 app.use("/api", businessRouter);
 app.use("/api", superAdminRouter);
+app.use('/api', multipleChoiceRouter);
+app.use('/api', playeRouter);
+app.use('/api', answerRouter);
