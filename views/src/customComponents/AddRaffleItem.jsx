@@ -37,7 +37,7 @@ export default function AddRaffleItem({ className, ...props }) {
   useEffect(() => {
     async function getRafflePartners() {
       const partners = await axios.get(
-        `http://localhost:4000/api/raffle-partners`
+        `/api/raffle-partners`
       );
       setPartnerList(partners.data.partners);
     }

@@ -49,7 +49,7 @@ function EditRaffleItemView(item) {
   useEffect(() => {
     async function getRafflePartners() {
       const partners = await axios.get(
-        `http://localhost:4000/api/raffle-partners`
+        `/api/raffle-partners`
       );
       setPartnerList(partners.data.partners);
     }
@@ -82,7 +82,7 @@ function EditRaffleItemView(item) {
       logo: logo,
       rafflePartner: rafflePartner,
     };
-    axios.put(`localhost:4000/api/raffle-item/${id}`, formData);
+    axios.put(`/api/raffle-item/${id}`, formData);
   }
   return (
     <form>

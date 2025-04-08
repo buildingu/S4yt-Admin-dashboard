@@ -33,7 +33,7 @@ export default function AdminStudentView() {
   const [students, setStudents] = useState([]);
   useEffect(() => {
     async function fetchStudents() {
-      const students = await axios.get("http://localhost:4000/api/users");
+      const students = await axios.get("/api/users");
       console.log(students.data);
       await setStudents(students.data);
     }

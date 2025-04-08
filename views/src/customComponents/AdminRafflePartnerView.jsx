@@ -63,7 +63,7 @@ function EditRafflePartnerView(partner) {
       resource_category: resourceCategory,
       logo: logo,
     };
-    axios.put(`localhost:4000/api/raffle-partner/${id}`, formData);
+    axios.put(`/api/raffle-partner/${id}`, formData);
   }
   return (
     <form>
@@ -129,14 +129,14 @@ export default function AdminBusinessView() {
   useEffect(() => {
     async function fetchPartners() {
       const partners = await axios.get(
-        "http://localhost:4000/api/raffle-partners"
+        "/api/raffle-partners"
       );
       await setPartners(partners.data.partners);
     }
     fetchPartners();
   }, []);
   async function deletePartner(partnerId) {
-    await axios.delete(`http://localhost:4000/api/raffle-partner/${partnerId}`);
+    await axios.delete(`/api/raffle-partner/${partnerId}`);
   }
 
   async function handleDeletePartner(partnerId) {

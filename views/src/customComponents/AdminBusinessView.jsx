@@ -127,7 +127,7 @@ export default function AdminBusinessView() {
   useEffect(() => {
     async function fetchBusinesses() {
       const businesses = await axios.get(
-        "http://localhost:4000/api/admin/businesses"
+        "/api/admin/businesses"
       );
       console.log(businesses.data);
       await setBusinesses(businesses.data);
@@ -136,7 +136,7 @@ export default function AdminBusinessView() {
   }, []);
   async function deleteBusiness(businessId) {
     console.log(businessId);
-    await axios.delete(`http://localhost:4000/api/business/${businessId}`);
+    await axios.delete(`/api/business/${businessId}`);
   }
 
   async function handleDeleteBusiness(businessId) {

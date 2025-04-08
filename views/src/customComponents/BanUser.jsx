@@ -46,7 +46,7 @@ export default function BanUser({ student }) {
   }
   async function banUser(id) {
     try {
-      await axios.put(`/ban-user/${id}`, { duration: banDuration });
+      await axios.put(`/api/ban-user/${id}`, { duration: banDuration });
       alert(
         `${student.name} has been banned for ${formatDuration(banDuration)}!`
       );
