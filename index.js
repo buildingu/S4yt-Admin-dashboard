@@ -25,7 +25,9 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({}));
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://s4yt-admin-dashboard.vercel.app'],
+}));
 app.use(fileUpload());
 
 app.listen(port, () => {
