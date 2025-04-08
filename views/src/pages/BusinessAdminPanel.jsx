@@ -44,16 +44,16 @@ function BusinessAdminPanel() {
           </TabsTrigger>
           <TabsTrigger
             value="confirmAttendance"
-            className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
+            className="bg-[#333] focus:border-[#F9EB02] text-white"
           >
             Confirm Attendance
           </TabsTrigger>
-          <button
+          <TabsTrigger
             onClick={handleLogout}
-            className="bg-red-500 text-white px-2 mb-5 text-sm rounded-xl mt-4"
+            className="bg-red-500 text-white  mb-1"
           >
             Logout
-          </button>
+          </TabsTrigger>
 
         </TabsList>
         <TabsContent value="you">

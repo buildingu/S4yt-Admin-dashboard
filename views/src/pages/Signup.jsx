@@ -2,6 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { CircularProgress, Snackbar, Alert } from "@mui/material"; 
 import {
   Card,
   CardContent,
@@ -17,14 +18,15 @@ function Signup({ className, ...props }) {
     businessName: "",
     email: "",
     password: "",
-    role: "business" //Will need to tweak this so its dynamic later on,
+    role: "business",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); 
+  const [successMessage, setSuccessMessage] = useState(""); 
 
   const validate = () => {
     let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
     if (!formData.businessName.trim()) {
       tempErrors.businessName = "Business name is required.";
@@ -32,10 +34,6 @@ function Signup({ className, ...props }) {
     if (!emailRegex.test(formData.email)) {
       tempErrors.email = "Enter a valid email.";
     }
-    /*if (!passwordRegex.test(formData.password)) {
-      tempErrors.password =
-        "Password must be at least 8 characters, include one uppercase letter and one number.";
-    }*/
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
@@ -45,22 +43,33 @@ function Signup({ className, ...props }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Sending data to backend:", formData);
-      axios.post('/api/register', formData);
+      setLoading(true); 
+      try {
+        const response = await axios.post("/api/register", formData);
+        setSuccessMessage("Registration complete!"); 
+        setFormData({
+          businessName: "",
+          email: "",
+          password: "",
+          role: "business",
+        }); 
+      } catch (error) {
+        setErrors({ api: error.response?.data?.message || "Registration failed." });
+      } finally {
+        setLoading(false); 
+      }
     }
   };
 
   return (
     <div className={cn("flex flex-col items-center justify-center min-h-screen bg-[#242424]", className)} {...props}>
-      <Card className="w-[400px] md:w-[500px] p-8 bg-[#1a1a1a] text-white shadow-lg rounded-lg mx-auto  border-none">
+      <Card className="w-[400px] md:w-[500px] p-8 bg-[#1a1a1a] text-white shadow-lg rounded-lg mx-auto border-none">
         <CardHeader>
           <CardTitle className="text-2xl">Sign Up</CardTitle>
-          <CardDescription className="text-gray-400">
-            Create an account to get started
-          </CardDescription>
+          <CardDescription className="text-gray-400">Create an account to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -92,9 +101,7 @@ function Signup({ className, ...props }) {
                   required
                   className="bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white"
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
@@ -107,12 +114,15 @@ function Signup({ className, ...props }) {
                   required
                   className="bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white"
                 />
-                {errors.password && (
-                  <p className="text-red-500 text-sm">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
-              <Button type="submit" className="w-full bg-[#F9EB02] text-[#242424] rounded-lg py-2 font-semibold hover:bg-[#d4c102] transition">
-                Sign Up
+              {errors.api && <p className="text-red-500 text-sm">{errors.api}</p>} 
+              <Button
+                type="submit"
+                className="w-full bg-[#F9EB02] text-[#242424] rounded-lg py-2 font-semibold hover:bg-[#d4c102] transition"
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} /> : "Sign Up"} 
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
@@ -124,6 +134,15 @@ function Signup({ className, ...props }) {
           </form>
         </CardContent>
       </Card>
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={6000}
+        onClose={() => setSuccessMessage("")}
+      >
+        <Alert severity="success" onClose={() => setSuccessMessage("")}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

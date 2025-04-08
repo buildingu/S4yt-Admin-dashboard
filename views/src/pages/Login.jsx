@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "@/auth/AuthContext";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 function Login({ className, ...props }) {
   let [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ function Login({ className, ...props }) {
   const [errors, setErrors] = useState({});
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
-  
+
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
 
@@ -29,7 +29,7 @@ function Login({ className, ...props }) {
       navigate(`/business-db/${user._id}`);
     }
   }, [user]);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
@@ -37,14 +37,19 @@ function Login({ className, ...props }) {
         email: email,
         password: password,
       };
-      const response = await axios.post('/api/login', data);
-      if(response.status === 200){
-        login(response.data.userData, response.data.token);
+
+      try {
+        const response = await axios.post('/api/login', data);
+        if (response.status === 200) {
+          login(response.data.userData, response.data.token);
+        }
+      } catch (error) {
+        if (error.response && error.response.data) {
+          setErrors({ api: error.response.data.message });
+        } else {
+          setErrors({ api: "An unexpected error occurred. Please try again." });
+        }
       }
-      console.log("Sending data to backend:", {
-        email: email,
-        password: password,
-      });
     }
   };
 
@@ -57,9 +62,15 @@ function Login({ className, ...props }) {
     if (!emailRegex.test(emailInput)) {
       tempErrors.email = "Enter a valid email.";
     }
+
+    if (!passwordInput) {
+      tempErrors.password = "Password is required.";
+    }
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-[#333] border border-gray-700 focus:border-[#F9EB02] text-white">
@@ -70,7 +81,7 @@ function Login({ className, ...props }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -82,10 +93,9 @@ function Login({ className, ...props }) {
                   required
                   onChange={handleEmailChange}
                 />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
+
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
@@ -104,16 +114,17 @@ function Login({ className, ...props }) {
                   placeholder="************"
                   onChange={handlePasswordChange}
                 />
+                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-              <Button type="submit" className="w-full" onClick={handleSubmit}>
+
+              {errors.api && <p className="text-red-500 text-sm mt-4">{errors.api}</p>} {/* Show API error */}
+
+              <Button type="submit" className="w-full">
                 Login
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{"   "}
+              Don&apos;t have an account?{" "}
               <a href="/signup" className="underline underline-offset-4">
                 Sign up
               </a>
