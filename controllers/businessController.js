@@ -1,5 +1,12 @@
 const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
+const cloudinary = require('cloudinary');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
 
 exports.getBusinesses = async (req, res) => {
     try {
@@ -30,18 +37,28 @@ exports.getBusinessById = async (req, res) => {
 
 exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
-    const { name, description, logo, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
-
+    const { name, description,  title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
+    const logo = req.file;
+    
     try {
         const businessExists = await checkIfExists(Business, id);
         if (!businessExists) {
             return res.status(404).json({ message: 'Business not found or already deleted' });
         }
 
+        let logoUrl = null;
+        if (logo) {
+            const cloudinaryUploadResult = await cloudinary.uploader.upload(logo, {
+                folder: 'business_logos',
+                resource_type: 'auto',   
+            });
+            logoUrl = cloudinaryUploadResult.secure_url; 
+        }
+
         const updateFields = {
             ...(name && { name }),
             ...(description && { description }),
-            ...(logo && { logo_s4yt: logo }),
+            ...(logoUrl  && { logo: logoUrl  }),
             ...(question && { question_main: question }),
             ...(title && { title }),
             ...(youtubeLink && { youtube_link: youtubeLink }),
@@ -54,10 +71,11 @@ exports.updateBusiness = async (req, res) => {
         }
 
         const updatedBusiness = await Business.findByIdAndUpdate(id, updateFields, { new: true });
-        console.log(REQ)
+        console.log(logoUrl);
 
         res.status(200).json(updatedBusiness);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'Error updating business', error });
     }
 };

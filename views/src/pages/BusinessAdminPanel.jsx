@@ -44,7 +44,7 @@ function BusinessAdminPanel() {
           </TabsTrigger>
           <TabsTrigger
             value="confirmAttendance"
-            className="bg-[#333] focus:border-[#F9EB02] text-white"
+            className="bg-[#333] focus:border-[#F9EB02] text-white mb-4"
           >
             Confirm Attendance
           </TabsTrigger>

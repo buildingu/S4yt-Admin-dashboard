@@ -1,5 +1,7 @@
+//we wanna be able to easily sort through students hwo have agreed to join the final meeting and then copy their emails
+//or save the emails into a csv
+//raffle partners must be able to see their raffle item winners emails
 import React, { useEffect, useState } from "react";
-
 import {
   Table,
   TableBody,

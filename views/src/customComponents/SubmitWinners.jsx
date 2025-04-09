@@ -265,8 +265,8 @@ export default function SubmitWinners({ ...props }) {
                         {row.submission_link}
                       </a>
                     </TableCell>
-                    <TableCell>{row.rating}</TableCell>
-                    <TableCell>{row.award}</TableCell>
+                    <TableCell style={{color: '#fff'}}>{row.rating}</TableCell>
+                    <TableCell style={{color: 'white'}}>{row.award}</TableCell>
                     <TableCell>
                       <Button
                         variant="outlined"

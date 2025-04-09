@@ -1,39 +1,33 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect, useRef } from "react";
 import ToastComponent from "@/components/ToastComponent";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material"; // Import MUI Alert
 
 export default function EditYourInfo({ className, userType, ...props }) {
-
   const [logo, setLogo] = useState(null);
+  const [logoFile, setLogoFile] = useState(null); // To store the actual file for uploading
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
   const [title, setTitle] = useState("");
   const [ytLink, setYtLink] = useState("");
-  const id  = props.id;
+  const id = props.id;
   const toastRef = useRef();
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(""); // State to store the error message
 
   const fetchBusinessInfo = async () => {
     try {
-      const response = await axios.get(`/api/business/${id}`); //redirect to prev page if the id of the business doesn't exist
-      console.log(response.data)
+      const response = await axios.get(`/api/business/${id}`);
       if (response.status !== 200) {
-        Navigate(-1);
+        navigate(-1);
       }
       setName(response.data.business_name);
       setDescription(response.data.description);
@@ -42,27 +36,38 @@ export default function EditYourInfo({ className, userType, ...props }) {
       setTitle(response.data.title);
       setIsLoading(false);
     } catch (error) {
-      Navigate(-1);
+      navigate(-1);
     }
-
-
-  }
+  };
 
   useEffect(() => {
-    if(id)fetchBusinessInfo();
-  }, [id])
+    if (id) fetchBusinessInfo();
+  }, [id]);
+
   function handleNameChange(e) {
     setName(e.target.value);
   }
+
   function handleDescriptionChange(e) {
     setDescription(e.target.value);
   }
+
+  
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file)); 
+      setLogoFile(file); 
+      setErrorMessage(""); 
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
+
   function handleQuestionChange(e) {
     setQuestion(e.target.value);
   }
+
   function handleYTLinkChange(e) {
     setYtLink(e.target.value);
   }
@@ -73,26 +78,44 @@ export default function EditYourInfo({ className, userType, ...props }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    let formData = {
-      name: name,
-      description: description,
-      logo: logo,
-      title: title,
-      question: question,
-      youtubeLink: ytLink,
-    };
-    //
-    axios.put(`/api/business/${id}`, formData)
-    axios.put(`/api/challenge/${id}`, {title: title, description: description})
-    toastRef.current.triggerToast();
+
+  
+    const formData = new FormData();
+    formData.append("name", name || "");
+    formData.append("description", description || "");
+    formData.append("title", title || "");
+    formData.append("question", question || "");
+    formData.append("youtubeLink", ytLink || "");
+
+   
+    if (logoFile) {
+      formData.append("logo", logoFile); 
+    } else if (errorMessage) {
+      return; 
+    }
+
+    
+    axios
+      .put(`/api/business/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        toastRef.current.triggerToast();
+        console.log(response.data); 
+      })
+      .catch((error) => {
+        console.error("Error updating business:", error);
+      });
+
+    axios.put(`/api/challenge/${id}`, { title: title, description: description });
   }
-  if (isLoading) return <p>Loading...</p>
-  console.log(name)
+
+  if (isLoading) return <p>Loading...</p>;
+
   return (
-    <div
-      className={cn("flex flex-col gap-6 border-transparent", className)}
-      {...props}
-    >
+    <div className={cn("flex flex-col gap-6 border-transparent", className)} {...props}>
       <Card className="bg-[#333] text-white mb-4 border-transparent">
         <CardHeader>
           <CardTitle className="text-2xl">
@@ -101,7 +124,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
           <CardDescription className="text-gray-400">
             {userType === "business"
               ? "Update Information About You"
-              : "Add/edit a business. To edit, enter the name of an existing business. To add, enter the name of a new business. View all businesses in the 'View Businesses' tab."}
+              : "Add/edit a business. To edit, enter the name of an existing business. To add, enter the name of a new business."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -137,8 +160,14 @@ export default function EditYourInfo({ className, userType, ...props }) {
                   className="text-white-400"
                   id="logo"
                   type="file"
+                  accept="image/*"
                   onChange={handleLogoChange}
                 />
+                {errorMessage && (
+                  <Alert severity="error" className="mt-2">
+                    {errorMessage}
+                  </Alert>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="question">Question</Label>
@@ -163,7 +192,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="ytlink">Youtube Link</Label>
+                <Label htmlFor="ytlink">YouTube Link</Label>
                 <Input
                   className="text-white-400"
                   id="ytlink"
