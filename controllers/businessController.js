@@ -1,12 +1,7 @@
 const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
-const cloudinary = require('cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
 
 exports.getBusinesses = async (req, res) => {
     try {
@@ -28,7 +23,7 @@ exports.getBusinessById = async (req, res) => {
         if (!business) {
             return res.status(404).json({ message: "Business not found or already deleted" });
         }
-        return res.status(200).json(business );
+        return res.status(200).json(business);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching business', error });
     }
@@ -37,9 +32,10 @@ exports.getBusinessById = async (req, res) => {
 
 exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
-    const { name, description,  title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
-    const logo = req.file;
-    
+    const { name, description, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
+    const logo = req.files?.logo;
+    console.log(logo);
+
     try {
         const businessExists = await checkIfExists(Business, id);
         if (!businessExists) {
@@ -47,23 +43,45 @@ exports.updateBusiness = async (req, res) => {
         }
 
         let logoUrl = null;
+
+        console.log("Cloudinary config:", {
+            name: process.env.CLOUDINARY_CLOUD_NAME,
+            key: process.env.CLOUDINARY_API_KEY,
+            secret: process.env.CLOUDINARY_API_SECRET
+        });
+
         if (logo) {
-            const cloudinaryUploadResult = await cloudinary.uploader.upload(logo, {
+            if (businessExists.logo) {
+                const logoUrlParts = businessExists.logo.split('/');
+                const publicIdWithExt = logoUrlParts.slice(-1)[0]; 
+                const folder = logoUrlParts[logoUrlParts.length - 2]; 
+                const publicId = `${folder}/${publicIdWithExt.split('.')[0]}`;
+
+                try {
+                    await cloudinary.uploader.destroy(publicId);
+                    console.log(`Deleted previous logo: ${publicId}`);
+                } catch (err) {
+                    console.warn(`Failed to delete previous logo from Cloudinary:`, err);
+                }
+            }
+
+            const dataUri = `data:${logo.mimetype};base64,${logo.data.toString('base64')}`;
+            const uploadResult = await cloudinary.uploader.upload(dataUri, {
                 folder: 'business_logos',
-                resource_type: 'auto',   
+                resource_type: 'auto',
             });
-            logoUrl = cloudinaryUploadResult.secure_url; 
+            logoUrl = uploadResult.secure_url;
         }
 
         const updateFields = {
             ...(name && { name }),
             ...(description && { description }),
-            ...(logoUrl  && { logo: logoUrl  }),
+            ...(logoUrl && { logo: logoUrl }),
             ...(question && { question_main: question }),
             ...(title && { title }),
-            ...(youtubeLink && { youtube_link: youtubeLink }),
-            ...(award_limit !== undefined && { award_limit: award_limit }),
-            ...(attendance_confirm !== undefined && { attendance_confirm: attendance_confirm })
+            ...(youtubeLink && { video_url: youtubeLink }),
+            ...(award_limit !== undefined && { award_limit }),
+            ...(attendance_confirm !== undefined && { attendance_confirm })
         };
 
         if (Object.keys(updateFields).length === 0) {
@@ -75,10 +93,11 @@ exports.updateBusiness = async (req, res) => {
 
         res.status(200).json(updatedBusiness);
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).json({ message: 'Error updating business', error });
     }
 };
+
 
 
 exports.deleteBusiness = async (req, res) => {

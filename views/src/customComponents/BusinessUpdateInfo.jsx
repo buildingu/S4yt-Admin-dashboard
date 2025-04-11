@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ToastComponent from "@/components/ToastComponent";
 import { useNavigate } from "react-router-dom";
-import { Alert } from "@mui/material"; // Import MUI Alert
+import { Alert } from "@mui/material";
 
 export default function EditYourInfo({ className, userType, ...props }) {
   const [logo, setLogo] = useState(null);
-  const [logoFile, setLogoFile] = useState(null); // To store the actual file for uploading
+  const [logoFile, setLogoFile] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
@@ -21,7 +21,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
   const toastRef = useRef();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(""); // State to store the error message
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fetchBusinessInfo = async () => {
     try {
@@ -34,6 +34,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
       setQuestion(response.data.question_main);
       setYtLink(response.data.youtube_link);
       setTitle(response.data.title);
+      setLogo(response.data.logo);
       setIsLoading(false);
     } catch (error) {
       navigate(-1);
@@ -86,21 +87,11 @@ export default function EditYourInfo({ className, userType, ...props }) {
     formData.append("title", title || "");
     formData.append("question", question || "");
     formData.append("youtubeLink", ytLink || "");
-
-   
-    if (logoFile) {
-      formData.append("logo", logoFile); 
-    } else if (errorMessage) {
-      return; 
-    }
+    formData.append("logo", logoFile); 
 
     
     axios
-      .put(`/api/business/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      .put(`/api/business/${id}`, formData)
       .then((response) => {
         toastRef.current.triggerToast();
         console.log(response.data); 
@@ -168,6 +159,16 @@ export default function EditYourInfo({ className, userType, ...props }) {
                     {errorMessage}
                   </Alert>
                 )}
+                {logo  && (
+  <div className="mt-2">
+    <Label>Logo Preview:</Label>
+    <img
+      src={logo}
+      alt="Logo Preview"
+      className="max-w-[200px] max-h-[200px] mt-1 rounded"
+    />
+  </div>
+)}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="question">Question</Label>

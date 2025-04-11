@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
-
+const cloudinary = require('cloudinary').v2;
 const loginRouter = require("./routes/loginRoute");
 const registerRouter = require("./routes/registerRoute");
 const businessRouter = require("./routes/businessRoute");
@@ -15,6 +15,12 @@ const challengeRouter = require('./routes/challengeRoute');
 
 
 dotenv.config();
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+});
 
 const port = process.env.PORT;
 
