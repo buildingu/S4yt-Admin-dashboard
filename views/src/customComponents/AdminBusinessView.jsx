@@ -208,7 +208,7 @@ export default function AdminBusinessView() {
   const [businesses, setBusinesses] = useState([]);
   useEffect(() => {
     async function fetchBusinesses() {
-      const businessesResponse = await axios.get("/api/admin/businesses");
+      const businessesResponse = await axios.get("/api/business");
       await setBusinesses(
         businessesResponse.data.filter((business) => !business.deleted)
       );

@@ -68,7 +68,7 @@ exports.updateBusiness = async (req, res) => {
         }
 
         const updateFields = {
-            ...(name && { business_name }),
+            ...(name && { business_name: name }),
             ...(description && { description }),
             ...(logoUrl && { logo: logoUrl }),
             ...(question && { question_main: question }),
@@ -102,6 +102,7 @@ exports.updateBusiness = async (req, res) => {
 
         res.status(200).json(updatedAdminBusiness);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'Error updating business', error });
     }
 };
