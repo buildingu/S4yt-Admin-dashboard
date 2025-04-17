@@ -11,6 +11,12 @@ const createRaffleItem = async (req, res) => {
     });
     let logoUrl = null;
 
+    console.log("Cloudinary config:", {
+      name: process.env.CLOUDINARY_CLOUD_NAME,
+      key: process.env.CLOUDINARY_API_KEY,
+      secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
     if (logo) {
       if (businessExists.logo) {
         const logoUrlParts = businessExists.logo.split("/");
