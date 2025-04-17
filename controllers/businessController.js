@@ -1,6 +1,7 @@
 const AdminBusiness = require('../models/adminbusiness');
 const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
+const {linkEmbed} = require('../utils/sanitizer')
 const cloudinary = require('cloudinary').v2;
 
 
@@ -35,6 +36,9 @@ exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
     const { name, description, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
     const logo = req.files?.logo;
+    console.log(logo)
+
+    const embedLink = linkEmbed(youtubeLink);
 
     try {
         const businessExists = await checkIfExists(AdminBusiness, id);
@@ -73,7 +77,7 @@ exports.updateBusiness = async (req, res) => {
             ...(logoUrl && { logo: logoUrl }),
             ...(question && { question_main: question }),
             ...(title && { title }),
-            ...(youtubeLink && { video_url: youtubeLink }),
+            ...(embedLink && { video_url: embedLink }),
             ...(award_limit !== undefined && { award_limit }),
             ...(attendance_confirm !== undefined && { attendance_confirm })
         };
@@ -88,7 +92,7 @@ exports.updateBusiness = async (req, res) => {
             ...(name && { name }),
             ...(description && { description }),
             ...(logoUrl && { logo: logoUrl }),
-            ...(youtubeLink && { video_url: youtubeLink }),
+            ...(embedLink && { video_url: embedLink }),
             ...(award_limit !== undefined && { award_limit }),
             ...(question && { question_main: question }),
             // ...(video_title && { video_title: video_title }), this doesn't exist on the admin panel 
