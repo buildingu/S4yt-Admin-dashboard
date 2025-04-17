@@ -2,11 +2,37 @@ const { checkIfExists } = require("../utils/modelUtils");
 const RafflePartner = require("../models/rafflePartner");
 
 const createRafflePartner = async (req, res) => {
-  const { organization_name, resource_link, resource_category, logo } =
-    req.body;
+  const { organization_name, resource_link, resource_category } = req.body;
+  const logo = req.files?.logo;
+  let logoUrl = null;
+
+  if (logo) {
+    if (businessExists.logo) {
+      const logoUrlParts = businessExists.logo.split("/");
+      const publicIdWithExt = logoUrlParts.slice(-1)[0];
+      const folder = logoUrlParts[logoUrlParts.length - 2];
+      const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
+
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`Deleted previous logo: ${publicId}`);
+      } catch (err) {
+        console.warn(`Failed to delete previous logo from Cloudinary:`, err);
+      }
+    }
+
+    const dataUri = `data:${logo.mimetype};base64,${logo.data.toString(
+      "base64"
+    )}`;
+    const uploadResult = await cloudinary.uploader.upload(dataUri, {
+      folder: "business_logos",
+      resource_type: "auto",
+    });
+    logoUrl = uploadResult.secure_url;
+  }
   try {
     const rafflePartner = new RafflePartner({
-      logo: logo,
+      logo: logoUrl,
       organization_name: organization_name,
       resource_link: resource_link,
       resource_category: resource_category,
@@ -20,16 +46,49 @@ const createRafflePartner = async (req, res) => {
 
 const updateRafflePartner = async (req, res) => {
   const id = req.params.id;
+
   try {
     if (!(await checkIfExists(RafflePartner, id))) {
       return res.status(404).json("Partner Does Not Exist!");
     }
-    const { organization_name, resource_link, resource_category, logo } =
-      req.body;
+    const { organization_name, resource_link, resource_category } = req.body;
+    const logo = req.files?.logo;
+    let logoUrl = null;
+
+    console.log("Cloudinary config:", {
+      name: process.env.CLOUDINARY_CLOUD_NAME,
+      key: process.env.CLOUDINARY_API_KEY,
+      secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    if (logo) {
+      if (businessExists.logo) {
+        const logoUrlParts = businessExists.logo.split("/");
+        const publicIdWithExt = logoUrlParts.slice(-1)[0];
+        const folder = logoUrlParts[logoUrlParts.length - 2];
+        const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
+
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`Deleted previous logo: ${publicId}`);
+        } catch (err) {
+          console.warn(`Failed to delete previous logo from Cloudinary:`, err);
+        }
+      }
+
+      const dataUri = `data:${logo.mimetype};base64,${logo.data.toString(
+        "base64"
+      )}`;
+      const uploadResult = await cloudinary.uploader.upload(dataUri, {
+        folder: "business_logos",
+        resource_type: "auto",
+      });
+      logoUrl = uploadResult.secure_url;
+    }
     const updatedRafflePartner = await RafflePartner.findByIdAndUpdate(
       id,
       {
-        logo: logo,
+        logo: logoUrl,
         organization_name: organization_name,
         resource_link: resource_link,
         resource_category: resource_category,

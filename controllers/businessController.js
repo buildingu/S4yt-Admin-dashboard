@@ -68,7 +68,7 @@ exports.updateBusiness = async (req, res) => {
         }
 
         const updateFields = {
-            ...(name && { name }),
+            ...(name && { business_name }),
             ...(description && { description }),
             ...(logoUrl && { logo: logoUrl }),
             ...(question && { question_main: question }),
@@ -91,6 +91,7 @@ exports.updateBusiness = async (req, res) => {
             ...(youtubeLink && { video_url: youtubeLink }),
             ...(award_limit !== undefined && { award_limit }),
             ...(question && { question_main: question }),
+            // ...(video_title && { video_title: video_title }), this doesn't exist on the admin panel 
         };
 
         await Business.findOneAndUpdate(
@@ -112,8 +113,9 @@ exports.deleteBusiness = async (req, res) => {
     try {
         if (!(await checkIfExists(AdminBusiness, id)))
             return res.status(404).json({ message: 'Business not found or already deleted' });
-
         const deletedAdminBusiness = await AdminBusiness.findByIdAndUpdate(id, { deleted: true }, { new: true });
+        await Business.findOneAndUpdate( { admin_business_id: id }, { deleted: true });
+
         res.status(200).json({ message: 'Business deleted successfully', business: deletedAdminBusiness });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting business', error });
