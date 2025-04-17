@@ -33,6 +33,7 @@ import BanUser from "./BanUser";
 
 export default function AdminStudentView() {
   const [students, setStudents] = useState([]);
+  const [coins, setCoins] = useState(0);
   useEffect(() => {
     async function fetchStudents() {
       const students = await axios.get("/api/users");
@@ -41,6 +42,10 @@ export default function AdminStudentView() {
     }
     fetchStudents();
   }, []);
+  function handleCoinChange(e) {
+    console.log(e.target.value);
+    setCoins(Number(e.target.value));
+  }
 
   return (
     <Table className="w-full">
@@ -83,7 +88,18 @@ export default function AdminStudentView() {
                       have to login again!
                     </DialogDescription>
                   </DialogHeader>
-                  <Button variant="destructive">I'm Sure - Kick</Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      try {
+                        axios.put(`/api/kickUser/${student._id}`);
+                      } catch (error) {
+                        console.error("Error:", error);
+                      }
+                    }}
+                  >
+                    I'm Sure - Kick
+                  </Button>
                 </DialogContent>
               </Dialog>
             </TableCell>
@@ -102,8 +118,24 @@ export default function AdminStudentView() {
                   <DialogDescription>
                     {student.name} currently has {student.coins} coins.
                   </DialogDescription>
-                  <Input type="number" placeholder="Enter New Coins"></Input>
-                  <Button>Manage</Button>
+                  <Input
+                    type="number"
+                    placeholder="Enter New Coins"
+                    onChange={handleCoinChange}
+                  ></Input>
+                  <Button
+                    onClick={() => {
+                      try {
+                        axios.put(`/api/manage-coins/${student._id}`, {
+                          newCoins: coins,
+                        });
+                      } catch (error) {
+                        console.error(error);
+                      }
+                    }}
+                  >
+                    Manage
+                  </Button>
                 </DialogContent>
               </Dialog>
             </TableCell>
