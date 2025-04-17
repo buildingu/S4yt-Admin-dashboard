@@ -92,7 +92,7 @@ export default function AdminStudentView() {
                     variant="destructive"
                     onClick={() => {
                       try {
-                        axios.put(`/api/kickUser/${student._id}`);
+                        axios.put(`/api/kick-user/${student._id}`);
                       } catch (error) {
                         console.error("Error:", error);
                       }
