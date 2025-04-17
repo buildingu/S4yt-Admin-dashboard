@@ -1,8 +1,8 @@
 const Player = require("../models/playerUser");
-const AdminBusiness = require('../models/adminbusiness');
-const Business = require('../models/business');
-const mongoose = require('mongoose');
-const Answer = require('../models/answers');
+const AdminBusiness = require("../models/adminbusiness");
+const Business = require("../models/business");
+const mongoose = require("mongoose");
+const Answer = require("../models/answers");
 
 const { checkIfExists } = require("../utils/modelUtils");
 const manageCoins = async (req, res) => {
@@ -63,6 +63,7 @@ const getUsers = async (req, res) => {
         banned_until: user.banned_until,
         email: user.email,
         coins: user.coins,
+        attend_meeting: user.attend_meeting,
       };
       filteredUsers.push(filteredUser);
     });
@@ -78,110 +79,131 @@ const getWinners = async (req, res) => {
 
     const business = await checkIfExists(AdminBusiness, businessId);
     if (!business) {
-      return res.status(404).json({ message: "Business not found or already deleted" });
+      return res
+        .status(404)
+        .json({ message: "Business not found or already deleted" });
     }
 
-
-    const winnerUserAwards = business.winners.map(winner => ({
-      user: winner.user.toString(), 
+    const winnerUserAwards = business.winners.map((winner) => ({
+      user: winner.user.toString(),
       award: winner.award,
     }));
 
-    const winnersAnswers = await Answer.find({ user: { $in: winnerUserAwards.map(w => w.user) } })
-      .select("submission_link user rating");
+    const winnersAnswers = await Answer.find({
+      user: { $in: winnerUserAwards.map((w) => w.user) },
+    }).select("submission_link user rating");
 
-    const winnersData = winnersAnswers.map(answer => {
-      const winner = winnerUserAwards.find(winner => winner.user === answer.user.toString());
+    const winnersData = winnersAnswers.map((answer) => {
+      const winner = winnerUserAwards.find(
+        (winner) => winner.user === answer.user.toString()
+      );
       return {
         submission_link: answer.submission_link,
         user: answer.user,
-        award:winner.award, 
-        rating: answer.rating,  
+        award: winner.award,
+        rating: answer.rating,
       };
     });
 
     res.status(200).json(winnersData);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching Winners from Users', error });
+    res
+      .status(500)
+      .json({ message: "Error fetching Winners from Users", error });
   }
 };
-
 
 const saveWinners = async (req, res) => {
   try {
     const { businessId } = req.params;
     const { winners } = req.body;
     if (winners.length === 0) {
-      return res.status(400).json({ success: false, message: "Invalid winners array" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid winners array" });
     }
     if (!(await checkIfExists(AdminBusiness, businessId)))
-      return res.status(404).json({ message: 'Business not found or already deleted' });
+      return res
+        .status(404)
+        .json({ message: "Business not found or already deleted" });
 
-    const formattedWinners = winners.map(winner => ({
+    const formattedWinners = winners.map((winner) => ({
       user: new mongoose.Types.ObjectId(winner.user),
-      award: winner.award
+      award: winner.award,
     }));
 
     const updatedAdminBusiness = await AdminBusiness.findByIdAndUpdate(
       businessId,
       {
         $addToSet: {
-          winners: { $each: formattedWinners }
-        }
+          winners: { $each: formattedWinners },
+        },
       },
       { new: true }
     );
 
-    const formatted2Winners = winners.map(winner => ({
+    const formatted2Winners = winners.map((winner) => ({
       user_id: new mongoose.Types.ObjectId(winner.user),
-      award: winner.award
+      award: winner.award,
     }));
-    const business = await Business.findOne({admin_business_id: new mongoose.Types.ObjectId(businessId)})
-    console.log(business)
-    await Business.findByIdAndUpdate(
-      business._id,
-      {
-        $addToSet: {
-          winners: { $each: formatted2Winners }
-        }
+    const business = await Business.findOne({
+      admin_business_id: new mongoose.Types.ObjectId(businessId),
+    });
+    console.log(business);
+    await Business.findByIdAndUpdate(business._id, {
+      $addToSet: {
+        winners: { $each: formatted2Winners },
       },
-
-    );
+    });
 
     res.status(200).json(updatedAdminBusiness);
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: 'Error saving Winners from Users', error });
-  }
-}
-
-const deleteWinners = async (req, res) => {
-  try {
-    const { businessId, userId } = req.params; 
-
-    const adminbusiness = await checkIfExists(AdminBusiness, businessId);
-    if (!adminbusiness) {
-      return res.status(404).json({ message: "Business not found or already deleted" });
-    }
-    const winnerIndex = adminbusiness.winners.findIndex(winner => winner.user.toString() === userId);
-    if (winnerIndex === -1) {
-      return res.status(404).json({ message: "User not found in the winners list" });
-    }
-    await AdminBusiness.updateOne(
-      { _id: businessId },
-      { $pull: { winners: { user: userId } } } 
-    );
-    const business = await Business.findOne({admin_business_id: new mongoose.Types.ObjectId(businessId)})
-    await Business.updateOne(
-      { _id: business._id },
-      { $pull: { winners: { user_id: userId } } } 
-    );
-    res.status(200).json({ message: "Winner successfully removed" });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting winner', error });
+    console.log(error);
+    res.status(500).json({ message: "Error saving Winners from Users", error });
   }
 };
 
+const deleteWinners = async (req, res) => {
+  try {
+    const { businessId, userId } = req.params;
 
-module.exports = { manageCoins, kickUser, banUser, getUsers, getWinners, saveWinners, deleteWinners };
+    const adminbusiness = await checkIfExists(AdminBusiness, businessId);
+    if (!adminbusiness) {
+      return res
+        .status(404)
+        .json({ message: "Business not found or already deleted" });
+    }
+    const winnerIndex = adminbusiness.winners.findIndex(
+      (winner) => winner.user.toString() === userId
+    );
+    if (winnerIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "User not found in the winners list" });
+    }
+    await AdminBusiness.updateOne(
+      { _id: businessId },
+      { $pull: { winners: { user: userId } } }
+    );
+    const business = await Business.findOne({
+      admin_business_id: new mongoose.Types.ObjectId(businessId),
+    });
+    await Business.updateOne(
+      { _id: business._id },
+      { $pull: { winners: { user_id: userId } } }
+    );
+    res.status(200).json({ message: "Winner successfully removed" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting winner", error });
+  }
+};
 
+module.exports = {
+  manageCoins,
+  kickUser,
+  banUser,
+  getUsers,
+  getWinners,
+  saveWinners,
+  deleteWinners,
+};

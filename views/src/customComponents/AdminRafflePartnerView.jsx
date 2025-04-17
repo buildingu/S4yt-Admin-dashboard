@@ -41,6 +41,8 @@ import {
 function EditRafflePartnerView({ partner }) {
   let [logo, setLogo] = useState(null);
   let [logoFile, setLogoFile] = useState(null);
+  let [resourceLogo, setResourceLogo] = useState(null);
+  let [resourceLogoFile, setResourceLogoFile] = useState(null);
   let [organizationName, setOrganizationName] = useState(
     partner?.organization_name
   );
@@ -69,12 +71,23 @@ function EditRafflePartnerView({ partner }) {
       setErrorMessage("Please upload a valid image file.");
     }
   }
+  function handleResourceLogoChange(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setResourceLogo(URL.createObjectURL(file));
+      setResourceLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
+  }
   function handleSubmit(id) {
     let formData = {
       organization_name: organizationName,
       resource_link: resourceLink,
       resource_category: resourceCategory,
       logo: logoFile,
+      resourceLogo: resourceLogoFile,
     };
     try {
       axios.put(`/api/raffle-item/${id}`, formData);
@@ -122,6 +135,15 @@ function EditRafflePartnerView({ partner }) {
           />
         </div>
         <div className="grid gap-2">
+          <Label htmlFor="resourceLogo">Resource Logo</Label>
+          <Input
+            className="text-white-400"
+            id="resourceLogo"
+            type="file"
+            onChange={handleResourceLogoChange}
+          />
+        </div>
+        <div className="grid gap-2">
           <Label htmlFor="logo">Image</Label>
           <Input
             className="text-white-400"
@@ -153,7 +175,9 @@ export default function AdminRafflePartnerView() {
   const [partners, setPartners] = useState([]);
   useEffect(() => {
     async function fetchPartners() {
-      const partners = await axios.get("/api/raffle-partners");
+      const partners = await axios.get(
+        "http://localhost:4000/api/raffle-partners"
+      );
       await setPartners(partners.data.partners);
     }
     fetchPartners();
@@ -179,7 +203,8 @@ export default function AdminRafflePartnerView() {
           <TableHead className="text-center">Partner Name</TableHead>
           <TableHead className="text-center">Resource Category</TableHead>
           <TableHead className="text-center">Resource Link</TableHead>
-          <TableHead className="text-center">Logo URL</TableHead>
+          <TableHead className="text-center">Resource Logo</TableHead>
+          <TableHead className="text-center">Logo</TableHead>
           <TableHead className="text-center">Edit Partner</TableHead>
           <TableHead className="text-center">Delete Partner</TableHead>
         </TableRow>
@@ -190,7 +215,12 @@ export default function AdminRafflePartnerView() {
             <TableCell>{partner.organization_name}</TableCell>
             <TableCell>{partner.resource_category}</TableCell>
             <TableCell>{partner.resource_link}</TableCell>
-            <TableCell>{partner.logo}</TableCell>
+            <TableCell>
+              <img src={partner.resource_logo}></img>
+            </TableCell>
+            <TableCell>
+              <img src={partner.logo}></img>
+            </TableCell>
             <TableCell>
               <Dialog>
                 <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">

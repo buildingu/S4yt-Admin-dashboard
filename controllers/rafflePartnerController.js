@@ -4,7 +4,9 @@ const RafflePartner = require("../models/rafflePartner");
 const createRafflePartner = async (req, res) => {
   const { organization_name, resource_link, resource_category } = req.body;
   const logo = req.files?.logo;
+  const resourceLogo = req.files?.resourceLogo;
   let logoUrl = null;
+  let resourceLogoUrl = null;
 
   console.log("Cloudinary config:", {
     name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,12 +38,40 @@ const createRafflePartner = async (req, res) => {
     });
     logoUrl = uploadResult.secure_url;
   }
+  if (resourceLogo) {
+    if (businessExists.resourceLogo) {
+      const resourceLogoUrlParts = businessExists.resourceLogo.split("/");
+      const publicIdWithExt = resourceLogoUrlParts.slice(-1)[0];
+      const folder = resourceLogoUrlParts[resourceLogoUrlParts.length - 2];
+      const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
+
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`Deleted previous resource logo: ${publicId}`);
+      } catch (err) {
+        console.warn(
+          `Failed to delete previous resource logo from Cloudinary:`,
+          err
+        );
+      }
+    }
+
+    const dataUri = `data:${
+      resourceLogo.mimetype
+    };base64,${resourceLogo.data.toString("base64")}`;
+    const uploadResult = await cloudinary.uploader.upload(dataUri, {
+      folder: "resource_logos",
+      resource_type: "auto",
+    });
+    resourceLogoUrl = uploadResult.secure_url;
+  }
   try {
     const rafflePartner = new RafflePartner({
       logo: logoUrl,
       organization_name: organization_name,
       resource_link: resource_link,
       resource_category: resource_category,
+      resource_logo: resourceLogo,
     });
     await rafflePartner.save();
     res.status(200).json("New Raffle Partner Created!");
@@ -59,7 +89,9 @@ const updateRafflePartner = async (req, res) => {
     }
     const { organization_name, resource_link, resource_category } = req.body;
     const logo = req.files?.logo;
+    const resourceLogo = req.files?.resourceLogo;
     let logoUrl = null;
+    let resourceLogoUrl = null;
 
     console.log("Cloudinary config:", {
       name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -91,6 +123,33 @@ const updateRafflePartner = async (req, res) => {
       });
       logoUrl = uploadResult.secure_url;
     }
+    if (resourceLogo) {
+      if (businessExists.resourceLogo) {
+        const resourceLogoUrlParts = businessExists.resourceLogo.split("/");
+        const publicIdWithExt = resourceLogoUrlParts.slice(-1)[0];
+        const folder = resourceLogoUrlParts[resourceLogoUrlParts.length - 2];
+        const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
+
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`Deleted previous resource logo: ${publicId}`);
+        } catch (err) {
+          console.warn(
+            `Failed to delete previous resource logo from Cloudinary:`,
+            err
+          );
+        }
+      }
+
+      const dataUri = `data:${
+        resourceLogo.mimetype
+      };base64,${resourceLogo.data.toString("base64")}`;
+      const uploadResult = await cloudinary.uploader.upload(dataUri, {
+        folder: "resource_logos",
+        resource_type: "auto",
+      });
+      resourceLogoUrl = uploadResult.secure_url;
+    }
     const updatedRafflePartner = await RafflePartner.findByIdAndUpdate(
       id,
       {
@@ -98,6 +157,7 @@ const updateRafflePartner = async (req, res) => {
         organization_name: organization_name,
         resource_link: resource_link,
         resource_category: resource_category,
+        resource_logo: resourceLogoUrl,
       },
       { new: true }
     );
