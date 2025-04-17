@@ -1,7 +1,7 @@
 const Answer = require('../models/answers');
 const Challenge = require('../models/challenge.js')
 const mongoose = require('mongoose');
-const Business = require('../models/business');
+const Business = require('../models/adminbusiness');
 const { checkIfExists } = require('../utils/modelUtils');
 
 
@@ -13,7 +13,7 @@ exports.getBusinessAnswers = async (req, res) => {
 
     if (!business)
       return res.status(404).json({ message: "Business not found or already deleted" });
-    const challenge = await Challenge.findOne({ business: new mongoose.Types.ObjectId(businessId) });
+    const challenge = await Challenge.findOne({ admin_business: new mongoose.Types.ObjectId(businessId) });
 
     if (!challenge || challenge.length === 0)
       return res.status(200).json({ message: "No challenge found for this business" });

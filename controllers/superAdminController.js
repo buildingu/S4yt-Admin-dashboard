@@ -1,4 +1,4 @@
-const AdminBusiness = require("../models/business");
+const AdminBusiness = require("../models/adminbusiness");
 const { checkIfExists } = require("../utils/modelUtils");
 const getBusinesses = async (req, res) => {
   //tested

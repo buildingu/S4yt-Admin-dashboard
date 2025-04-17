@@ -50,7 +50,7 @@ function BusinessAdminPanel() {
           </TabsTrigger>
           <TabsTrigger
             onClick={handleLogout}
-            className="bg-red-500 text-white  mb-1"
+            className="bg-red-500 text-white mb-4"
           >
             Logout
           </TabsTrigger>

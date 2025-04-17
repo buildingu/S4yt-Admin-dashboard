@@ -1,3 +1,4 @@
+const AdminBusiness = require('../models/adminbusiness');
 const Business = require('../models/business');
 const { checkIfExists } = require('../utils/modelUtils');
 const cloudinary = require('cloudinary').v2;
@@ -5,7 +6,7 @@ const cloudinary = require('cloudinary').v2;
 
 exports.getBusinesses = async (req, res) => {
     try {
-        const business = await Business.find({ deleted: false });
+        const business = await AdminBusiness.find({ deleted: false });
         if (!business) return res.status(404).json({ message: 'Businesses not found' });
 
         res.status(200).json(business);
@@ -19,7 +20,7 @@ exports.getBusinessById = async (req, res) => {
     const id = req.params.id;
     try {
 
-        const business = await checkIfExists(Business, id);
+        const business = await checkIfExists(AdminBusiness, id);
         if (!business) {
             return res.status(404).json({ message: "Business not found or already deleted" });
         }
@@ -34,21 +35,14 @@ exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
     const { name, description, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
     const logo = req.files?.logo;
-    console.log(logo);
 
     try {
-        const businessExists = await checkIfExists(Business, id);
+        const businessExists = await checkIfExists(AdminBusiness, id);
         if (!businessExists) {
             return res.status(404).json({ message: 'Business not found or already deleted' });
         }
 
         let logoUrl = null;
-
-        console.log("Cloudinary config:", {
-            name: process.env.CLOUDINARY_CLOUD_NAME,
-            key: process.env.CLOUDINARY_API_KEY,
-            secret: process.env.CLOUDINARY_API_SECRET
-        });
 
         if (logo) {
             if (businessExists.logo) {
@@ -88,12 +82,25 @@ exports.updateBusiness = async (req, res) => {
             return res.status(400).json({ message: 'No valid fields provided for update' });
         }
 
-        const updatedBusiness = await Business.findByIdAndUpdate(id, updateFields, { new: true });
-        console.log(logoUrl);
+        const updatedAdminBusiness = await AdminBusiness.findByIdAndUpdate(id, updateFields, { new: true });
 
-        res.status(200).json(updatedBusiness);
+        const businessUpdateFields = {
+            ...(name && { name }),
+            ...(description && { description }),
+            ...(logoUrl && { logo: logoUrl }),
+            ...(youtubeLink && { video_url: youtubeLink }),
+            ...(award_limit !== undefined && { award_limit }),
+            ...(question && { question_main: question }),
+        };
+
+        await Business.findOneAndUpdate(
+            { admin_business_id: id },
+            businessUpdateFields,
+            { new: true, upsert: true, runValidators: true }
+        );
+
+        res.status(200).json(updatedAdminBusiness);
     } catch (error) {
-        console.log(error);
         res.status(500).json({ message: 'Error updating business', error });
     }
 };
@@ -103,11 +110,11 @@ exports.updateBusiness = async (req, res) => {
 exports.deleteBusiness = async (req, res) => {
     const id = req.params.id;
     try {
-        if (!(await checkIfExists(Business, id)))
+        if (!(await checkIfExists(AdminBusiness, id)))
             return res.status(404).json({ message: 'Business not found or already deleted' });
 
-        const deletedBusiness = await Business.findByIdAndUpdate(id, { deleted: true }, { new: true });
-        res.status(200).json({ message: 'Business deleted successfully', business: deletedBusiness });
+        const deletedAdminBusiness = await AdminBusiness.findByIdAndUpdate(id, { deleted: true }, { new: true });
+        res.status(200).json({ message: 'Business deleted successfully', business: deletedAdminBusiness });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting business', error });
     }

@@ -1,11 +1,12 @@
 const User = require('../models/adminuser');
+const AdminBusiness = require('../models/adminbusiness');
 const Business = require('../models/business');
 
 const bcrypt = require('bcrypt');
 
 exports.registerUser = async (req, res) => {
   try {
-    const { businessName, email, password, role } = req.body;
+    const { businessName, email, password} = req.body;
     if (!businessName || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -16,9 +17,10 @@ exports.registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashedPassword });
-    const business = new Business({ business_user_id: user._id, business_name: businessName })
-
+    const adminbusiness = new AdminBusiness({ business_user_id: user._id, business_name: businessName })
+    const business = new Business ({admin_business_id: adminbusiness._id, name: businessName })
     await user.save();
+    await adminbusiness.save();
     await business.save();
     const userData = { //no password
       _id: user._id,

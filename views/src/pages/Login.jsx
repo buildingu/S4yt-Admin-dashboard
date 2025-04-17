@@ -27,6 +27,7 @@ function Login({ className, ...props }) {
   useEffect(() => {
     if (user && user._id) {
       navigate(`/business-db/${user._id}`);
+      console.log(user)
     }
   }, [user]);
 
@@ -40,7 +41,7 @@ function Login({ className, ...props }) {
 
       try {
         const response = await axios.post('/api/login', data);
-        if (response.status === 200) {
+        if (response.status === 200  && response.data.userData && response.data.userData._id) {
           login(response.data.userData, response.data.token);
         }
       } catch (error) {

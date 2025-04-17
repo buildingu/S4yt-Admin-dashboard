@@ -1,27 +1,23 @@
 const mongoose = require('mongoose');
-const businessSchema = new mongoose.Schema({
-    business_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    business_name: { type: String, required: true },
-    description: { type: String },
-    question_main: { type: String },
-    questions_learn_earn: [{
-      question: String,
-      optionA: String,
-      optionB: String,
-      optionC: String,
-      explanation: String,
-      correct: String
-    }],
-    link: String,
-    video_tile: String,
-    video_url: { type: String },
-    title: String,
-    logo: { type: String },
-    winners: [{_id: false, user: mongoose.Schema.Types.ObjectId,  award: Number}],
-    attendance_confirm: { type: Boolean, default: false },
-    award_limit: Number,
-    awarded_total: Number,
-    deleted: { type: Boolean, default: false}
-  }, { timestamps: true });
-  
-module.exports = mongoose.model('adminBusiness', businessSchema);
+const { Schema, Types } = mongoose;
+
+const businessSchema = new Schema({
+  admin_business_id: { type: Schema.Types.ObjectId, ref: 'adminBusiness' },
+  name: { type: String, required: true },
+  logo: { type: String, default: null },
+  description: { type: String, default: null },
+  video_url: { type: String, default: null },
+  video_title: { type: String, default: null },
+  challenge_question: { type: Schema.Types.ObjectId, ref: 'Challenge' },
+  winners: [
+    {
+      user_id: { type: Types.ObjectId, ref: 'User' },
+      award: { type: Number, default: 0, min: 0 }
+    }
+  ],
+  award_limit: { type: Number, default: 0, min: 0 },
+  awarded_total: { type: Number, default: 0, min: 0 },
+  deleted: { type: Boolean, default: false }
+}, { collection: 'businesses' });
+
+module.exports = mongoose.model('business', businessSchema);

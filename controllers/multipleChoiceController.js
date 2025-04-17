@@ -3,7 +3,7 @@ const MultipleChoice = require('../models/multipleChoice')
 
 exports.getMultipleChoice = async (req, res) => {
     try {
-        const { id } = req.params; //business id used here, getting questions based on the business
+        const { id } = req.params; //admin business id used here, getting questions based on the business
         const questions = await MultipleChoice.find({ business_id: id, deleted: false });
         res.json({ questions });
       } catch (error) {
@@ -13,7 +13,7 @@ exports.getMultipleChoice = async (req, res) => {
 }
 exports.getMultipleChoiceCount = async (req, res) => {
     try {
-        const {id} = req.params;    //business id used here, counting for each business
+        const {id} = req.params;    //admin business id used here, counting for each business
         const count = await MultipleChoice.countDocuments({ business_id: id, deleted: false });
         res.status(200).json({ count: count });
     } catch (error) {
