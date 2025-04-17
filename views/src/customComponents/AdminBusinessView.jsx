@@ -42,9 +42,6 @@ function EditBusinessView({ business }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [title, setTitle] = useState(business?.title);
   const [awardLimit, setAwardLimit] = useState(business?.award_limit);
-  const [attendanceConfirm, setAttendanceConfirm] = useState(
-    business?.attendance_confirm
-  );
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -70,15 +67,6 @@ function EditBusinessView({ business }) {
   function handleTitleChange(e) {
     setTitle(e.target.value);
   }
-  function handleAttendanceConfirmChange(e) {
-    if (e === "true") {
-      setAttendanceConfirm(true);
-    } else if (e === "false") {
-      setAttendanceConfirm(false);
-    } else {
-      null;
-    }
-  }
   function handleAwardLimitChange(e) {
     setAwardLimit(e.target.value);
   }
@@ -91,8 +79,7 @@ function EditBusinessView({ business }) {
       question: question,
       youtubeLink: ytLink,
       title: title,
-      award_limit: awardLimit || null,
-      attendance_confirm: attendanceConfirm || null,
+      award_limit: awardLimit,
     };
     try {
       axios.put(`/api/business/${id}`, formData);
@@ -175,20 +162,16 @@ function EditBusinessView({ business }) {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="ytlink">Confirm Attendance</Label>
-          <Select
-            onValueChange={handleAttendanceConfirmChange}
-            id="attendanceConfirm"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Confirm Business Attendance" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="unchanged">Don't Change</SelectItem>
-              <SelectItem value="true">Yes</SelectItem>
-              <SelectItem value="false">No</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label htmlFor="awardLimit">Award Limit</Label>
+          <Input
+            className="text-white-400"
+            id="awardLimit"
+            type="number"
+            placeholder="Award Limit"
+            defaultValue={awardLimit}
+            required
+            onChange={handleAwardLimitChange}
+          />
         </div>
         <Button
           className="align-center"

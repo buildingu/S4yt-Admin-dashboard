@@ -27,6 +27,9 @@ import {
 
 export default function CreateRafflePartner({ className, ...props }) {
   let [logo, setLogo] = useState(null);
+  let [logoFile, setLogoFile] = useState(null);
+  let [resourceLogo, setResourceLogo] = useState(null);
+  let [resourceLogoFile, setResourceLogoFile] = useState(null);
   let [organizationName, setOrganizationName] = useState("");
   let [resourceCategory, setResourceCategory] = useState("");
   let [resourceLink, setResourceLink] = useState("");
@@ -41,16 +44,38 @@ export default function CreateRafflePartner({ className, ...props }) {
     setResourceLink(e.target.value);
   }
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
+  }
+  function handleResourceLogoChange(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setResourceLogo(URL.createObjectURL(file));
+      setResourceLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
   function handleSubmit() {
     let formData = {
       organization_name: organizationName,
       resource_link: resourceLink,
       resource_category: resourceCategory,
-      logo: logo,
+      logo: logoFile,
+      resourceLogo: resourceLogoFile,
     };
-    //send this to db
+    try {
+      axios.post(`/api/raffle-item`, formData);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   }
   return (
     <div
@@ -101,6 +126,15 @@ export default function CreateRafflePartner({ className, ...props }) {
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="resourceLogo">Resource Logo</Label>
+                <Input
+                  className="text-white-400"
+                  id="resourceLogo"
+                  type="file"
+                  onChange={handleResourceLogoChange}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="logo">Logo</Label>
                 <Input
                   className="text-white-400"
@@ -109,7 +143,7 @@ export default function CreateRafflePartner({ className, ...props }) {
                   onChange={handleLogoChange}
                 />
               </div>
-              <Button type="submit" className="w-full" onClick={handleSubmit}>
+              <Button className="w-full" onClick={handleSubmit}>
                 Create
               </Button>
             </div>
