@@ -7,7 +7,7 @@ const createRaffleItem = async (req, res) => {
   const logo = req.files?.logo;
   try {
     const associatedRafflePartner = await RafflePartner.findOne({
-      organization_name: rafflePartner,
+      _id: rafflePartner,
     });
     let logoUrl = null;
 

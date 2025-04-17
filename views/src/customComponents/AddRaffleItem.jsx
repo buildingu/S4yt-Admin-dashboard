@@ -25,15 +25,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { use } from "react";
+import { radioGroupClasses } from "@mui/material";
 
 export default function AddRaffleItem({ className, ...props }) {
   let [logo, setLogo] = useState(null);
+  let [logoFile, setLogoFile] = useState(null);
   let [item, setItem] = useState("");
   let [description, setDescription] = useState("");
   let [quantity, setQuantity] = useState(0);
   let [resourceLink, setResourceLink] = useState("");
   let [rafflePartner, setRafflePartner] = useState("");
   let [partnerList, setPartnerList] = useState([]);
+  let [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     async function getRafflePartners() {
       const partners = await axios.get(
@@ -56,21 +59,34 @@ export default function AddRaffleItem({ className, ...props }) {
     setResourceLink(e.target.value);
   }
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
   function handleRafflePartnerChange(e) {
-    setRafflePartner(e.value);
+    setRafflePartner(e);
   }
-  function handleSubmit() {
+  async function handleSubmit(e) {
+    e.preventDefault();
     let formData = {
       item: item,
       description: description,
       quantity: quantity,
       resourceLink: resourceLink,
-      logo: logo,
+      logo: logoFile,
       rafflePartner: rafflePartner,
     };
-    //send this to db
+
+    try {
+      await axios.post(`/api/raffle-item`, formData);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   }
   return (
     <div
@@ -140,6 +156,11 @@ export default function AddRaffleItem({ className, ...props }) {
                   type="file"
                   onChange={handleLogoChange}
                 />
+                {errorMessage && (
+                  <Alert severity="error" className="mt-2">
+                    {errorMessage}
+                  </Alert>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="rafflePartner">Raffle Partner</Label>
@@ -152,7 +173,7 @@ export default function AddRaffleItem({ className, ...props }) {
                   </SelectTrigger>
                   <SelectContent>
                     {partnerList.map((partner) => (
-                      <SelectItem value={partner.organization_name}>
+                      <SelectItem value={partner._id}>
                         {partner.organization_name}
                       </SelectItem>
                     ))}

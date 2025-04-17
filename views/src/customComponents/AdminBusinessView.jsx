@@ -22,13 +22,29 @@ import {
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-function EditBusinessView(business) {
+function EditBusinessView({ business }) {
   const [logo, setLogo] = useState(null);
-  const [name, setName] = useState(business.business_name);
-  const [description, setDescription] = useState(business.description);
-  const [question, setQuestion] = useState(business.question_main);
-  const [ytLink, setYtLink] = useState(business.youtube_link);
+  const [logoFile, setLogoFile] = useState(null);
+  const [name, setName] = useState(business?.business_name);
+  const [description, setDescription] = useState(business?.description);
+  const [question, setQuestion] = useState(business?.question_main);
+  const [ytLink, setYtLink] = useState(business?.youtube_link);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [title, setTitle] = useState(business?.title);
+  const [awardLimit, setAwardLimit] = useState(business?.award_limit);
+  const [attendanceConfirm, setAttendanceConfirm] = useState(
+    business?.attendance_confirm
+  );
   function handleNameChange(e) {
     setName(e.target.value);
   }
@@ -36,7 +52,14 @@ function EditBusinessView(business) {
     setDescription(e.target.value);
   }
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
   function handleQuestionChange(e) {
     setQuestion(e.target.value);
@@ -44,17 +67,38 @@ function EditBusinessView(business) {
   function handleYTLinkChange(e) {
     setYtLink(e.target.value);
   }
+  function handleTitleChange(e) {
+    setTitle(e.target.value);
+  }
+  function handleAttendanceConfirmChange(e) {
+    if (e === "true") {
+      setAttendanceConfirm(true);
+    } else if (e === "false") {
+      setAttendanceConfirm(false);
+    } else {
+      null;
+    }
+  }
+  function handleAwardLimitChange(e) {
+    setAwardLimit(e.target.value);
+  }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  function handleSubmit(id) {
     let formData = {
       name: name,
       description: description,
-      logo: logo,
+      logo: logoFile,
       question: question,
       youtubeLink: ytLink,
+      title: title,
+      award_limit: awardLimit || null,
+      attendance_confirm: attendanceConfirm || null,
     };
-    axios.put(`/api/business/${business._id}`, formData);
+    try {
+      axios.put(`/api/business/${id}`, formData);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   }
   return (
     <form>
@@ -92,6 +136,11 @@ function EditBusinessView(business) {
             onChange={handleLogoChange}
           />
         </div>
+        {errorMessage && (
+          <Alert severity="error" className="mt-2">
+            {errorMessage}
+          </Alert>
+        )}
         <div className="grid gap-2">
           <Label htmlFor="question">Question</Label>
           <Input
@@ -114,7 +163,40 @@ function EditBusinessView(business) {
             defaultValue={ytLink}
           />
         </div>
-        <Button className="align-center" onClick={handleSubmit}>
+        <div className="grid gap-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            className="text-white-400"
+            id="title"
+            type="text"
+            placeholder="Business Title"
+            onChange={handleTitleChange}
+            defaultValue={title}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="ytlink">Confirm Attendance</Label>
+          <Select
+            onValueChange={handleAttendanceConfirmChange}
+            id="attendanceConfirm"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Confirm Business Attendance" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unchanged">Don't Change</SelectItem>
+              <SelectItem value="true">Yes</SelectItem>
+              <SelectItem value="false">No</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button
+          className="align-center"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit(business._id);
+          }}
+        >
           Submit
         </Button>
       </div>
@@ -126,16 +208,14 @@ export default function AdminBusinessView() {
   const [businesses, setBusinesses] = useState([]);
   useEffect(() => {
     async function fetchBusinesses() {
-      const businesses = await axios.get(
-        "/api/admin/businesses"
+      const businessesResponse = await axios.get("/api/admin/businesses");
+      await setBusinesses(
+        businessesResponse.data.filter((business) => !business.deleted)
       );
-      console.log(businesses.data);
-      await setBusinesses(businesses.data);
     }
     fetchBusinesses();
   }, []);
   async function deleteBusiness(businessId) {
-    console.log(businessId);
     await axios.delete(`/api/business/${businessId}`);
   }
 
