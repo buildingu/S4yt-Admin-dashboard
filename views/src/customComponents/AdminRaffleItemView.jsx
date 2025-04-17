@@ -38,14 +38,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function EditRaffleItemView(item) {
+function EditRaffleItemView({ item }) {
   let [logo, setLogo] = useState(null);
+  let [logoFile, setLogoFile] = useState(null);
   let [name, setName] = useState("");
   let [description, setDescription] = useState("");
   let [quantity, setQuantity] = useState(0);
   let [resourceLink, setResourceLink] = useState("");
   let [rafflePartner, setRafflePartner] = useState("");
   let [partnerList, setPartnerList] = useState([]);
+  let [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     async function getRafflePartners() {
       const partners = await axios.get(
@@ -68,10 +70,17 @@ function EditRaffleItemView(item) {
     setResourceLink(e.target.value);
   }
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
   function handleRafflePartnerChange(e) {
-    setRafflePartner(e.value);
+    setRafflePartner(e);
   }
   function handleSubmit(id) {
     let formData = {
@@ -79,10 +88,14 @@ function EditRaffleItemView(item) {
       description: description,
       quantity: quantity,
       resourceLink: resourceLink,
-      logo: logo,
+      logo: logoFile,
       rafflePartner: rafflePartner,
     };
-    axios.put(`/api/raffle-item/${id}`, formData);
+    try {
+      axios.put(`/api/raffle-item/${id}`, formData);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   }
   return (
     <form>
@@ -141,6 +154,11 @@ function EditRaffleItemView(item) {
             onChange={handleLogoChange}
           />
         </div>
+        {errorMessage && (
+          <Alert severity="error" className="mt-2">
+            {errorMessage}
+          </Alert>
+        )}
         <div className="grid gap-2">
           <Label htmlFor="rafflePartner">Raffle Partner</Label>
           <Select onValueChange={handleRafflePartnerChange} id="rafflePartner">
@@ -174,18 +192,19 @@ export default function AdminBusinessView() {
   const [items, setItems] = useState([]);
   useEffect(() => {
     async function fetchItems() {
-      const items = await axios.get("http://localhost:4000/api/raffle-items");
+      const items = await axios.get("/api/raffle-items");
+      console.log(items);
       await setItems(items.data);
     }
     fetchItems();
   }, []);
   async function deleteItem(itemId) {
-    await axios.delete(`http://localhost:4000/api/raffle-item/${itemId}`);
+    await axios.delete(`/api/raffle-item/${itemId}`);
   }
 
   async function handleDeleteItem(itemId) {
     try {
-      await deleteItem(businessId);
+      await deleteItem(itemId);
       setItems(items.filter((item) => item._id !== itemId));
     } catch (error) {
       console.error("Error deleting item:", error);
@@ -222,7 +241,9 @@ export default function AdminBusinessView() {
             </TableCell>
             <TableCell>{item.stock}</TableCell>
             <TableCell>{item.raffle_partner_name}</TableCell>
-            <TableCell>{item.image_src}</TableCell>
+            <TableCell>
+              <img src={item.image_src}></img>
+            </TableCell>
             <TableCell>
               <Dialog>
                 <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">
