@@ -38,12 +38,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function EditRafflePartnerView(partner) {
+function EditRafflePartnerView({ partner }) {
   let [logo, setLogo] = useState(null);
   let [logoFile, setLogoFile] = useState(null);
-  let [organizationName, setOrganizationName] = useState("");
-  let [resourceCategory, setResourceCategory] = useState("");
-  let [resourceLink, setResourceLink] = useState("");
+  let [organizationName, setOrganizationName] = useState(
+    partner?.organization_name
+  );
+  let [resourceCategory, setResourceCategory] = useState(
+    partner?.resource_category
+  );
+  let [resourceLink, setResourceLink] = useState(partner?.resource_link);
   let [errorMessage, setErrorMessage] = useState("");
 
   function handleOrganizationNameChange(e) {
@@ -90,6 +94,7 @@ function EditRafflePartnerView(partner) {
             placeholder="Raffle Partner Name"
             required
             onChange={handleOrganizationNameChange}
+            defaultValue={organizationName}
           />
         </div>
         <div className="grid gap-2">
@@ -101,6 +106,7 @@ function EditRafflePartnerView(partner) {
             placeholder="Partner Resource Category"
             required
             onChange={handleResourceCategoryChange}
+            defaultValue={resourceCategory}
           />
         </div>
         <div className="grid gap-2">
@@ -112,6 +118,7 @@ function EditRafflePartnerView(partner) {
             placeholder="Resource Link"
             required
             onChange={handleResourceLinkChange}
+            defaultValue={resourceLink}
           />
         </div>
         <div className="grid gap-2">

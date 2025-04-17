@@ -41,18 +41,16 @@ import {
 function EditRaffleItemView({ item }) {
   let [logo, setLogo] = useState(null);
   let [logoFile, setLogoFile] = useState(null);
-  let [name, setName] = useState("");
-  let [description, setDescription] = useState("");
-  let [quantity, setQuantity] = useState(0);
-  let [resourceLink, setResourceLink] = useState("");
+  let [name, setName] = useState(item?.raffle_partner_name);
+  let [description, setDescription] = useState(item?.description);
+  let [quantity, setQuantity] = useState(item?.stock);
+  let [resourceLink, setResourceLink] = useState(item?.resource_link);
   let [rafflePartner, setRafflePartner] = useState("");
   let [partnerList, setPartnerList] = useState([]);
   let [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     async function getRafflePartners() {
-      const partners = await axios.get(
-        `/api/raffle-partners`
-      );
+      const partners = await axios.get(`/api/raffle-partners`);
       setPartnerList(partners.data.partners);
     }
     getRafflePartners();
@@ -109,6 +107,7 @@ function EditRaffleItemView({ item }) {
             placeholder="Item Name"
             required
             onChange={handleNameChange}
+            defaultValue={name}
           />
         </div>
         <div className="grid gap-2">
@@ -120,6 +119,7 @@ function EditRaffleItemView({ item }) {
             placeholder="Item Description"
             required
             onChange={handleDescriptionChange}
+            defaultValue={description}
           />
         </div>
         <div className="grid gap-2">
@@ -132,6 +132,7 @@ function EditRaffleItemView({ item }) {
             placeholder="Item Quantity"
             required
             onChange={handleQuantityChange}
+            defaultValue={quantity}
           />
         </div>
         <div className="grid gap-2">
@@ -143,6 +144,7 @@ function EditRaffleItemView({ item }) {
             placeholder="Resource Link"
             required
             onChange={handleResourceLinkChange}
+            defaultValue={resourceLink}
           />
         </div>
         <div className="grid gap-2">
