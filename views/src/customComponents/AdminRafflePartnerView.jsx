@@ -40,9 +40,11 @@ import {
 
 function EditRafflePartnerView(partner) {
   let [logo, setLogo] = useState(null);
+  let [logoFile, setLogoFile] = useState(null);
   let [organizationName, setOrganizationName] = useState("");
   let [resourceCategory, setResourceCategory] = useState("");
   let [resourceLink, setResourceLink] = useState("");
+  let [errorMessage, setErrorMessage] = useState("");
 
   function handleOrganizationNameChange(e) {
     setOrganizationName(e.target.value);
@@ -54,16 +56,27 @@ function EditRafflePartnerView(partner) {
     setResourceLink(e.target.value);
   }
   function handleLogoChange(e) {
-    setLogo(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Please upload a valid image file.");
+    }
   }
   function handleSubmit(id) {
     let formData = {
       organization_name: organizationName,
       resource_link: resourceLink,
       resource_category: resourceCategory,
-      logo: logo,
+      logo: logoFile,
     };
-    axios.put(`/api/raffle-partner/${id}`, formData);
+    try {
+      axios.put(`/api/raffle-item/${id}`, formData);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   }
   return (
     <form>
@@ -110,6 +123,11 @@ function EditRafflePartnerView(partner) {
             onChange={handleLogoChange}
           />
         </div>
+        {errorMessage && (
+          <Alert severity="error" className="mt-2">
+            {errorMessage}
+          </Alert>
+        )}
 
         <Button
           className="w-full"
@@ -124,13 +142,11 @@ function EditRafflePartnerView(partner) {
   );
 }
 
-export default function AdminBusinessView() {
+export default function AdminRafflePartnerView() {
   const [partners, setPartners] = useState([]);
   useEffect(() => {
     async function fetchPartners() {
-      const partners = await axios.get(
-        "/api/raffle-partners"
-      );
+      const partners = await axios.get("/api/raffle-partners");
       await setPartners(partners.data.partners);
     }
     fetchPartners();
