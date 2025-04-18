@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,9 +45,11 @@ export default function BanUser({ student }) {
   function handleBanDurationChange(e) {
     setBanDuration(e.target.value);
   }
-  async function banUser(id) {
+  function banUser(id) {
     try {
-      await axios.put(`/api/ban-user/${id}`, { duration: banDuration });
+      axios.put(`/api/ban-user/${id}`, {
+        duration: banDuration,
+      });
       alert(
         `${student.name} has been banned for ${formatDuration(banDuration)}!`
       );
@@ -74,14 +77,17 @@ export default function BanUser({ student }) {
             onChange={handleBanDurationChange}
           ></Input>
         </DialogHeader>
-        <Button
-          variant="destructive"
-          onClick={() => {
-            banUser(student._id);
-          }}
-        >
-          I'm sure - Ban!
-        </Button>
+        <DialogClose className="bg-inherit">
+          <Button
+            className="w-full"
+            variant="destructive"
+            onClick={() => {
+              banUser(student._id);
+            }}
+          >
+            I'm sure - Ban!
+          </Button>
+        </DialogClose>
       </DialogContent>
     </Dialog>
   );

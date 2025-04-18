@@ -35,7 +35,7 @@ const kickUser = async (req, res) => {
 const banUser = async (req, res) => {
   const id = req.params.id;
   const { duration } = req.body;
-  const banned_until = new Date(Date.now() + duration);
+  const banned_until = new Date(Date.now() + Number(duration));
   try {
     const user = await Player.findByIdAndUpdate(id, {
       banned_until: banned_until,
@@ -57,13 +57,20 @@ const getUsers = async (req, res) => {
     }
     let filteredUsers = [];
     users.forEach((user) => {
+      let banned_until_time;
+      if (user.banned_until <= Date.now()) {
+        banned_until_time = null;
+      } else {
+        banned_until_time = user.banned_until;
+      }
       let filteredUser = {
         _id: user._id,
         name: user.name,
-        banned_until: user.banned_until,
+        banned_until: banned_until_time,
         email: user.email,
         coins: user.coins,
         attend_meeting: user.attend_meeting,
+        kicked: user.kicked,
       };
       filteredUsers.push(filteredUser);
     });

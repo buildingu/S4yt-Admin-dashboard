@@ -179,7 +179,7 @@ export default function AdminRafflePartnerView() {
   useEffect(() => {
     async function fetchPartners() {
       const partners = await axios.get(
-        "http://localhost:4000/api/raffle-partners"
+        "/api/raffle-partners"
       );
       await setPartners(partners.data.partners);
     }

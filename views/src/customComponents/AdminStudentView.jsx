@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -44,10 +45,8 @@ export default function AdminStudentView() {
       const students = await axios.get("/api/users");
       console.log(students.data);
       setStudents(students.data);
-      setAttendees(
-        students.data.filter((student) => student.attend_meeting)
-      );
-       setDisplay(students.data);
+      setAttendees(students.data.filter((student) => student.attend_meeting));
+      setDisplay(students.data);
     }
     fetchStudents();
   }, []);
@@ -129,38 +128,45 @@ export default function AdminStudentView() {
                   {student.coins || "Error"}
                 </TableCell>
                 <TableCell>
-                  <Dialog>
-                    <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">
-                      Kick
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Kick {student.name}</DialogTitle>
-                        <DialogDescription>
-                          Are you sure you want to kick {student.name}? They
-                          will have to login again!
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          try {
-                            axios.put(`/api/kick-user/${student._id}`);
-                          } catch (error) {
-                            console.error("Error:", error);
-                          }
-                        }}
-                      >
-                        I'm Sure - Kick
-                      </Button>
-                    </DialogContent>
-                  </Dialog>
+                  {student.kicked ? (
+                    "Already Kicked!"
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">
+                        Kick
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Kick {student.name}</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to kick {student.name}? They
+                            will have to login again!
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogClose className="bg-inherit">
+                          <Button
+                            variant="destructive"
+                            className="w-full"
+                            onClick={() => {
+                              try {
+                                axios.put(`/api/kick-user/${student._id}`);
+                              } catch (error) {
+                                console.error("Error:", error);
+                              }
+                            }}
+                          >
+                            I'm Sure - Kick
+                          </Button>
+                        </DialogClose>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </TableCell>
                 <TableCell>
                   <BanUser student={student} />
                 </TableCell>
                 <TableCell>
-                  <Dialog disabled={student.banned_until !== null}>
+                  <Dialog>
                     <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">
                       Manage Coins
                     </DialogTrigger>
