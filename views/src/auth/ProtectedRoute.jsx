@@ -1,22 +1,24 @@
 import { Navigate } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "./AuthContext";
 
 const ProtectedRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
-  console.log(user["role"])
-  const isAdmin = user && user.role[0] == 'admin';
-  const isBusiness = user && user.role[0] == 'business';
+
+  const role = user?.role?.[0];
+  const isAdmin = role === 'admin';
+  const isBusiness = role === 'business';
 
   if (user && token) {
-    if (window.location.pathname.startsWith('/admin-db') && !isAdmin) {
+    const path = window.location.pathname;
+
+    if (path.startsWith('/admin-db') && !isAdmin) {
       return <Navigate to="/" replace />;
     }
-    else if (window.location.pathname.startsWith('/business-db') && !isBusiness) {
+    if (path.startsWith('/business-db') && !isBusiness) {
       return <Navigate to="/" replace />;
     }
-    return children; 
+
+    return children;
   }
 
   return <Navigate to="/login" replace />;
