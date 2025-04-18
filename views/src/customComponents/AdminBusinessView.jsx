@@ -79,6 +79,7 @@ function EditBusinessView({ business }) {
     formData.append("title", title || "");
     formData.append("question", question || "");
     formData.append("youtubeLink", ytLink || "");
+    formData.append("award_limit", awardLimit || "");
     formData.append("logo", logoFile);
     try {
       axios.put(`/api/business/${id}`, formData);
