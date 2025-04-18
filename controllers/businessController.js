@@ -36,7 +36,7 @@ exports.updateBusiness = async (req, res) => {
     const id = req.params.id;
     const { name, description, title, question, youtubeLink, award_limit, attendance_confirm } = req.body;
     const logo = req.files?.logo;
-    console.log(logo)
+    console.log(req.files)
 
     const embedLink = linkEmbed(youtubeLink);
 
@@ -106,7 +106,6 @@ exports.updateBusiness = async (req, res) => {
 
         res.status(200).json(updatedAdminBusiness);
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: 'Error updating business', error });
     }
 };

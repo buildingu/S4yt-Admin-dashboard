@@ -53,13 +53,13 @@ export default function EditYourInfo({ className, userType, ...props }) {
     setDescription(e.target.value);
   }
 
-  
+
   function handleLogoChange(e) {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
-      setLogo(URL.createObjectURL(file)); 
-      setLogoFile(file); 
-      setErrorMessage(""); 
+      setLogo(URL.createObjectURL(file));
+      setLogoFile(file);
+      setErrorMessage("");
     } else {
       setErrorMessage("Please upload a valid image file.");
     }
@@ -80,21 +80,21 @@ export default function EditYourInfo({ className, userType, ...props }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-  
+
     const formData = new FormData();
     formData.append("name", name || "");
     formData.append("description", description || "");
     formData.append("title", title || "");
     formData.append("question", question || "");
     formData.append("youtubeLink", ytLink || "");
-    formData.append("logo", logoFile); 
+    formData.append("logo", logoFile);
 
-    
+
     axios
       .put(`/api/business/${id}`, formData)
       .then((response) => {
         toastRef.current.triggerToast();
-        console.log(response.data); 
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error updating business:", error);
@@ -159,16 +159,16 @@ export default function EditYourInfo({ className, userType, ...props }) {
                     {errorMessage}
                   </Alert>
                 )}
-                {logo  && (
-  <div className="mt-2">
-    <Label>Logo Preview:</Label>
-    <img
-      src={logo}
-      alt="Logo Preview"
-      className="max-w-[200px] max-h-[200px] mt-1 rounded"
-    />
-  </div>
-)}
+                {logo && (
+                  <div className="mt-2">
+                    <Label>Logo Preview:</Label>
+                    <img
+                      src={logo}
+                      alt="Logo Preview"
+                      className="max-w-[200px] max-h-[200px] mt-1 rounded"
+                    />
+                  </div>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="question">Question</Label>

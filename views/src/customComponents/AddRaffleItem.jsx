@@ -73,14 +73,14 @@ export default function AddRaffleItem({ className, ...props }) {
   }
   async function handleSubmit(e) {
     e.preventDefault();
-    let formData = {
-      item: item,
-      description: description,
-      quantity: quantity,
-      resourceLink: resourceLink,
-      logo: logoFile,
-      rafflePartner: rafflePartner,
-    };
+    const formData = new FormData();
+    formData.append("name", item || "");
+    formData.append("description", description || "");
+    formData.append("quantity", quantity || 0);
+    formData.append("resourceLink", resourceLink || "");
+    formData.append("logo", logoFile || "");
+    formData.append("rafflePartner", rafflePartner || "");
+
 
     try {
       await axios.post(`/api/raffle-item`, formData);

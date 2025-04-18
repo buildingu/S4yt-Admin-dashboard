@@ -31,9 +31,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert } from "@mui/material";
 
 function EditBusinessView({ business }) {
-  const [logo, setLogo] = useState(null);
+  const [logo, setLogo] = useState(business.logo);
   const [logoFile, setLogoFile] = useState(null);
   const [name, setName] = useState(business?.business_name);
   const [description, setDescription] = useState(business?.description);
@@ -72,15 +73,13 @@ function EditBusinessView({ business }) {
   }
 
   function handleSubmit(id) {
-    let formData = {
-      name: name,
-      description: description,
-      logo: logoFile,
-      question: question,
-      youtubeLink: ytLink,
-      title: title,
-      award_limit: awardLimit,
-    };
+    const formData = new FormData();
+    formData.append("name", name || "");
+    formData.append("description", description || "");
+    formData.append("title", title || "");
+    formData.append("question", question || "");
+    formData.append("youtubeLink", ytLink || "");
+    formData.append("logo", logoFile);
     try {
       axios.put(`/api/business/${id}`, formData);
     } catch (err) {
@@ -89,6 +88,7 @@ function EditBusinessView({ business }) {
   }
   return (
     <form>
+      <div className="max-h-[80vh] overflow-y-auto p-4">
       <div className="flex flex-col gap-6">
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
@@ -122,6 +122,16 @@ function EditBusinessView({ business }) {
             type="file"
             onChange={handleLogoChange}
           />
+          {logo && (
+            <div className="mt-2">
+              <Label>Logo Preview:</Label>
+              <img
+                src={logo}
+                alt="Logo Preview"
+                className="max-w-[200px] max-h-[200px] mt-1 rounded"
+              />
+            </div>
+          )}
         </div>
         {errorMessage && (
           <Alert severity="error" className="mt-2">
@@ -183,6 +193,7 @@ function EditBusinessView({ business }) {
           Submit
         </Button>
       </div>
+      </div>
     </form>
   );
 }
@@ -210,7 +221,7 @@ export default function AdminBusinessView() {
       ); // Remove from local state
     } catch (error) {
       console.error("Error deleting business:", error);
-      alert("Failed to delete business.");
+      //alert("Failed to delete business.");
     }
   }
   return (

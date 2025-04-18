@@ -1,37 +1,17 @@
 const { checkIfExists } = require("../utils/modelUtils");
 const RafflePartner = require("../models/rafflePartner");
 const RaffleItem = require("../models/raffleItem");
+const cloudinary = require('cloudinary').v2;
 
 const createRaffleItem = async (req, res) => {
-  const { item, description, quantity, resourceLink, rafflePartner } = req.body;
+  const { name, description, quantity, resourceLink, rafflePartner } = req.body;
   const logo = req.files?.logo;
   try {
     const associatedRafflePartner = await RafflePartner.findOne({
       _id: rafflePartner,
     });
     let logoUrl = null;
-
-    console.log("Cloudinary config:", {
-      name: process.env.CLOUDINARY_CLOUD_NAME,
-      key: process.env.CLOUDINARY_API_KEY,
-      secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
     if (logo) {
-      if (businessExists.logo) {
-        const logoUrlParts = businessExists.logo.split("/");
-        const publicIdWithExt = logoUrlParts.slice(-1)[0];
-        const folder = logoUrlParts[logoUrlParts.length - 2];
-        const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
-
-        try {
-          await cloudinary.uploader.destroy(publicId);
-          console.log(`Deleted previous logo: ${publicId}`);
-        } catch (err) {
-          console.warn(`Failed to delete previous logo from Cloudinary:`, err);
-        }
-      }
-
       const dataUri = `data:${logo.mimetype};base64,${logo.data.toString(
         "base64"
       )}`;
@@ -45,15 +25,17 @@ const createRaffleItem = async (req, res) => {
     const raffleItem = new RaffleItem({
       raffle_partner: associatedRafflePartner._id,
       raffle_partner_name: rafflePartner,
-      name: item,
+      name: name,
       description: description,
       image_src: logoUrl,
       stock: quantity,
       resource_link: resourceLink,
     });
+    
     await raffleItem.save();
     res.status(200).json("New Raffle Item Created!");
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: "Error Adding Item", error });
   }
 };
@@ -71,16 +53,10 @@ const updateRaffleItem = async (req, res) => {
       organization_name: rafflePartner,
     });
     let logoUrl = null;
-
-    console.log("Cloudinary config:", {
-      name: process.env.CLOUDINARY_CLOUD_NAME,
-      key: process.env.CLOUDINARY_API_KEY,
-      secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
+    const itemExists = await checkIfExists(RaffleItem, id);
     if (logo) {
-      if (businessExists.logo) {
-        const logoUrlParts = businessExists.logo.split("/");
+      if (itemExists.logo) {
+        const logoUrlParts = itemExists.logo.split("/");
         const publicIdWithExt = logoUrlParts.slice(-1)[0];
         const folder = logoUrlParts[logoUrlParts.length - 2];
         const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
@@ -120,6 +96,7 @@ const updateRaffleItem = async (req, res) => {
       .status(200)
       .json({ message: "Updated Successfully!", updatedRaffleItem });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: "Error Updating Item", error });
   }
 };

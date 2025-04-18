@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import {
   Table,
   TableBody,
@@ -38,16 +37,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function EditRaffleItemView({ item }) {
-  let [logo, setLogo] = useState(null);
-  let [logoFile, setLogoFile] = useState(null);
-  let [name, setName] = useState(item?.raffle_partner_name);
-  let [description, setDescription] = useState(item?.description);
-  let [quantity, setQuantity] = useState(item?.stock);
-  let [resourceLink, setResourceLink] = useState(item?.resource_link);
-  let [rafflePartner, setRafflePartner] = useState("");
-  let [partnerList, setPartnerList] = useState([]);
-  let [errorMessage, setErrorMessage] = useState("");
+function EditRaffleItemView({ item, onUpdate }) {
+  const [logo, setLogo] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [name, setName] = useState(item?.raffle_partner_name);
+  const [description, setDescription] = useState(item?.description);
+  const [quantity, setQuantity] = useState(item?.stock);
+  const [resourceLink, setResourceLink] = useState(item?.resource_link);
+  const [rafflePartner, setRafflePartner] = useState(item?.raffle_partner_name);
+  const [partnerList, setPartnerList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     async function getRafflePartners() {
       const partners = await axios.get(`/api/raffle-partners`);
@@ -55,18 +55,7 @@ function EditRaffleItemView({ item }) {
     }
     getRafflePartners();
   }, []);
-  function handleNameChange(e) {
-    setName(e.target.value);
-  }
-  function handleDescriptionChange(e) {
-    setDescription(e.target.value);
-  }
-  function handleQuantityChange(e) {
-    setQuantity(e.target.value);
-  }
-  function handleResourceLinkChange(e) {
-    setResourceLink(e.target.value);
-  }
+
   function handleLogoChange(e) {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
@@ -77,26 +66,28 @@ function EditRaffleItemView({ item }) {
       setErrorMessage("Please upload a valid image file.");
     }
   }
-  function handleRafflePartnerChange(e) {
-    setRafflePartner(e);
-  }
-  function handleSubmit(id) {
-    let formData = {
-      item: name,
-      description: description,
-      quantity: quantity,
-      resourceLink: resourceLink,
-      logo: logoFile,
-      rafflePartner: rafflePartner,
-    };
+
+  async function handleSubmit(e) {
+    e.preventDefault(); 
+
+    const formData = new FormData();
+    formData.append("name", name || "");
+    formData.append("description", description || "");
+    formData.append("quantity", quantity || 0);
+    formData.append("resourceLink", resourceLink || "");
+    formData.append("logo", logoFile || "");
+    formData.append("rafflePartner", rafflePartner || "");
+
     try {
-      axios.put(`/api/raffle-item/${id}`, formData);
+      await axios.put(`/api/raffle-item/${item._id}`, formData);
+      if (onUpdate) onUpdate(); 
     } catch (err) {
       console.error("Submission error:", err);
     }
   }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="flex flex-col gap-6">
         <div className="grid gap-2">
           <Label htmlFor="item">Name</Label>
@@ -106,7 +97,7 @@ function EditRaffleItemView({ item }) {
             type="text"
             placeholder="Item Name"
             required
-            onChange={handleNameChange}
+            onChange={(e) => setName(e.target.value)}
             defaultValue={name}
           />
         </div>
@@ -115,10 +106,10 @@ function EditRaffleItemView({ item }) {
           <Input
             className="text-white-400"
             id="description"
-            type="textarea"
+            type="text"
             placeholder="Item Description"
             required
-            onChange={handleDescriptionChange}
+            onChange={(e) => setDescription(e.target.value)}
             defaultValue={description}
           />
         </div>
@@ -131,7 +122,7 @@ function EditRaffleItemView({ item }) {
             min="0"
             placeholder="Item Quantity"
             required
-            onChange={handleQuantityChange}
+            onChange={(e) => setQuantity(e.target.value)}
             defaultValue={quantity}
           />
         </div>
@@ -143,7 +134,7 @@ function EditRaffleItemView({ item }) {
             type="url"
             placeholder="Resource Link"
             required
-            onChange={handleResourceLinkChange}
+            onChange={(e) => setResourceLink(e.target.value)}
             defaultValue={resourceLink}
           />
         </div>
@@ -157,19 +148,23 @@ function EditRaffleItemView({ item }) {
           />
         </div>
         {errorMessage && (
-          <Alert severity="error" className="mt-2">
-            {errorMessage}
-          </Alert>
+          <p className="text-red-500 text-sm">{errorMessage}</p>
         )}
         <div className="grid gap-2">
           <Label htmlFor="rafflePartner">Raffle Partner</Label>
-          <Select onValueChange={handleRafflePartnerChange} id="rafflePartner">
+          <Select
+            onValueChange={(value) => setRafflePartner(value)}
+            defaultValue={rafflePartner}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Associated Raffle Partner" />
             </SelectTrigger>
             <SelectContent>
               {partnerList.map((partner) => (
-                <SelectItem value={partner.organization_name}>
+                <SelectItem
+                  key={partner.organization_name}
+                  value={partner.organization_name}
+                >
                   {partner.organization_name}
                 </SelectItem>
               ))}
@@ -177,13 +172,8 @@ function EditRaffleItemView({ item }) {
           </Select>
         </div>
 
-        <Button
-          className="w-full"
-          onClick={() => {
-            handleSubmit(item._id);
-          }}
-        >
-          Create
+        <Button type="submit" className="w-full">
+          Update
         </Button>
       </div>
     </form>
@@ -192,14 +182,16 @@ function EditRaffleItemView({ item }) {
 
 export default function AdminBusinessView() {
   const [items, setItems] = useState([]);
+
+  async function fetchItems() {
+    const items = await axios.get("/api/raffle-items");
+    setItems(items.data);
+  }
+
   useEffect(() => {
-    async function fetchItems() {
-      const items = await axios.get("/api/raffle-items");
-      console.log(items);
-      await setItems(items.data);
-    }
     fetchItems();
   }, []);
+
   async function deleteItem(itemId) {
     await axios.delete(`/api/raffle-item/${itemId}`);
   }
@@ -213,6 +205,7 @@ export default function AdminBusinessView() {
       alert("Failed to delete item.");
     }
   }
+
   return (
     <Table>
       <TableCaption>All Raffle Items</TableCaption>
@@ -221,14 +214,14 @@ export default function AdminBusinessView() {
           <TableHead className="text-center">Item Name</TableHead>
           <TableHead className="text-center">Stock</TableHead>
           <TableHead className="text-center">Raffle Partner</TableHead>
-          <TableHead className="text-center">Logo URL</TableHead>
-          <TableHead className="text-center">Edit Item</TableHead>
-          <TableHead className="text-center">Delete Item</TableHead>
+          <TableHead className="text-center">Logo</TableHead>
+          <TableHead className="text-center">Edit</TableHead>
+          <TableHead className="text-center">Delete</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {items.map((item) => (
-          <TableRow key={item.name}>
+          <TableRow key={item._id}>
             <TableCell>
               <TooltipProvider>
                 <Tooltip>
@@ -244,44 +237,41 @@ export default function AdminBusinessView() {
             <TableCell>{item.stock}</TableCell>
             <TableCell>{item.raffle_partner_name}</TableCell>
             <TableCell>
-              <img src={item.image_src}></img>
+              <img src={item.image_src} className="w-16 h-16 object-contain" />
             </TableCell>
             <TableCell>
               <Dialog>
-                <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90">
+                <DialogTrigger className="bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90 px-4 py-2 rounded">
                   Edit
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Edit {item.name}'s Information</DialogTitle>
+                    <DialogTitle>Edit {item.name}</DialogTitle>
                     <DialogDescription>
-                      Update Raffle Item Information Here.
+                      Update Raffle Item Information Below:
                     </DialogDescription>
                   </DialogHeader>
-                  <EditRaffleItemView item={item} />
+                  <EditRaffleItemView item={item} onUpdate={fetchItems} />
                 </DialogContent>
               </Dialog>
             </TableCell>
             <TableCell>
               <Dialog>
-                <DialogTrigger className="bg-red-500 text-zinc-50 shadow-sm hover:bg-red-500/90 dark:bg-red-900 dark:text-zinc-50 dark:hover:bg-red-900/90">
+                <DialogTrigger className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 rounded">
                   Delete
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {item.name} from our database!
+                      Are you sure you want to delete <strong>{item.name}</strong>? This action cannot be undone.
                     </DialogDescription>
                   </DialogHeader>
                   <Button
                     variant="destructive"
-                    onClick={() => {
-                      handleDeleteItem(item._id);
-                    }}
+                    onClick={() => handleDeleteItem(item._id)}
                   >
-                    I'm sure - delete
+                    Yes, Delete
                   </Button>
                 </DialogContent>
               </Dialog>

@@ -1,5 +1,6 @@
 const { checkIfExists } = require("../utils/modelUtils");
 const RafflePartner = require("../models/rafflePartner");
+const cloudinary = require('cloudinary').v2;
 
 const createRafflePartner = async (req, res) => {
   const { organization_name, resource_link, resource_category } = req.body;
@@ -8,27 +9,7 @@ const createRafflePartner = async (req, res) => {
   let logoUrl = null;
   let resourceLogoUrl = null;
 
-  console.log("Cloudinary config:", {
-    name: process.env.CLOUDINARY_CLOUD_NAME,
-    key: process.env.CLOUDINARY_API_KEY,
-    secret: process.env.CLOUDINARY_API_SECRET,
-  });
-
   if (logo) {
-    if (businessExists.logo) {
-      const logoUrlParts = businessExists.logo.split("/");
-      const publicIdWithExt = logoUrlParts.slice(-1)[0];
-      const folder = logoUrlParts[logoUrlParts.length - 2];
-      const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
-
-      try {
-        await cloudinary.uploader.destroy(publicId);
-        console.log(`Deleted previous logo: ${publicId}`);
-      } catch (err) {
-        console.warn(`Failed to delete previous logo from Cloudinary:`, err);
-      }
-    }
-
     const dataUri = `data:${logo.mimetype};base64,${logo.data.toString(
       "base64"
     )}`;
@@ -38,44 +19,28 @@ const createRafflePartner = async (req, res) => {
     });
     logoUrl = uploadResult.secure_url;
   }
+
   if (resourceLogo) {
-    if (businessExists.resourceLogo) {
-      const resourceLogoUrlParts = businessExists.resourceLogo.split("/");
-      const publicIdWithExt = resourceLogoUrlParts.slice(-1)[0];
-      const folder = resourceLogoUrlParts[resourceLogoUrlParts.length - 2];
-      const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
-
-      try {
-        await cloudinary.uploader.destroy(publicId);
-        console.log(`Deleted previous resource logo: ${publicId}`);
-      } catch (err) {
-        console.warn(
-          `Failed to delete previous resource logo from Cloudinary:`,
-          err
-        );
-      }
-    }
-
-    const dataUri = `data:${
-      resourceLogo.mimetype
-    };base64,${resourceLogo.data.toString("base64")}`;
+    const dataUri = `data:${resourceLogo.mimetype};base64,${resourceLogo.data.toString("base64")}`;
     const uploadResult = await cloudinary.uploader.upload(dataUri, {
       folder: "resource_logos",
       resource_type: "auto",
     });
     resourceLogoUrl = uploadResult.secure_url;
   }
+
   try {
     const rafflePartner = new RafflePartner({
       logo: logoUrl,
       organization_name: organization_name,
       resource_link: resource_link,
       resource_category: resource_category,
-      resource_logo: resourceLogo,
+      resource_logo: resourceLogoUrl,
     });
     await rafflePartner.save();
     res.status(200).json("New Raffle Partner Created!");
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: "Error Adding Partner", error });
   }
 };
@@ -84,8 +49,9 @@ const updateRafflePartner = async (req, res) => {
   const id = req.params.id;
 
   try {
-    if (!(await checkIfExists(RafflePartner, id))) {
-      return res.status(404).json("Partner Does Not Exist!");
+    const partnerExists = await checkIfExists(RafflePartner, id);
+    if (!partnerExists) {
+      return res.status(404).json({ message: 'Business not found or already deleted' });
     }
     const { organization_name, resource_link, resource_category } = req.body;
     const logo = req.files?.logo;
@@ -93,15 +59,10 @@ const updateRafflePartner = async (req, res) => {
     let logoUrl = null;
     let resourceLogoUrl = null;
 
-    console.log("Cloudinary config:", {
-      name: process.env.CLOUDINARY_CLOUD_NAME,
-      key: process.env.CLOUDINARY_API_KEY,
-      secret: process.env.CLOUDINARY_API_SECRET,
-    });
 
     if (logo) {
-      if (businessExists.logo) {
-        const logoUrlParts = businessExists.logo.split("/");
+      if (partnerExists.logo) {
+        const logoUrlParts = partnerExists.logo.split("/");
         const publicIdWithExt = logoUrlParts.slice(-1)[0];
         const folder = logoUrlParts[logoUrlParts.length - 2];
         const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
@@ -124,8 +85,8 @@ const updateRafflePartner = async (req, res) => {
       logoUrl = uploadResult.secure_url;
     }
     if (resourceLogo) {
-      if (businessExists.resourceLogo) {
-        const resourceLogoUrlParts = businessExists.resourceLogo.split("/");
+      if (partnerExists.resourceLogo) {
+        const resourceLogoUrlParts = partnerExists.resourceLogo.split("/");
         const publicIdWithExt = resourceLogoUrlParts.slice(-1)[0];
         const folder = resourceLogoUrlParts[resourceLogoUrlParts.length - 2];
         const publicId = `${folder}/${publicIdWithExt.split(".")[0]}`;
@@ -141,9 +102,8 @@ const updateRafflePartner = async (req, res) => {
         }
       }
 
-      const dataUri = `data:${
-        resourceLogo.mimetype
-      };base64,${resourceLogo.data.toString("base64")}`;
+      const dataUri = `data:${resourceLogo.mimetype
+        };base64,${resourceLogo.data.toString("base64")}`;
       const uploadResult = await cloudinary.uploader.upload(dataUri, {
         folder: "resource_logos",
         resource_type: "auto",
@@ -165,6 +125,7 @@ const updateRafflePartner = async (req, res) => {
       .status(200)
       .json({ message: "Updated Successfully!", updatedRafflePartner });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: "Error Updating Partner", error });
   }
 };

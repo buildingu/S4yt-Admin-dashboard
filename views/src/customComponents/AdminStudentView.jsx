@@ -43,11 +43,11 @@ export default function AdminStudentView() {
     async function fetchStudents() {
       const students = await axios.get("/api/users");
       console.log(students.data);
-      await setStudents(students.data);
-      await setAttendees(
+      setStudents(students.data);
+      setAttendees(
         students.data.filter((student) => student.attend_meeting)
       );
-      await setDisplay(students.data);
+       setDisplay(students.data);
     }
     fetchStudents();
   }, []);
@@ -182,6 +182,16 @@ export default function AdminStudentView() {
                             axios.put(`/api/manage-coins/${student._id}`, {
                               newCoins: coins,
                             });
+                            setStudents((prev) =>
+                              prev.map((s) =>
+                                s._id === student._id ? { ...s, coins } : s
+                              )
+                            );
+                            setDisplay((prev) =>
+                              prev.map((s) =>
+                                s._id === student._id ? { ...s, coins } : s
+                              )
+                            );
                           } catch (error) {
                             console.error(error);
                           }

@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Alert } from "@mui/material";
 function EditRafflePartnerView({ partner }) {
   let [logo, setLogo] = useState(null);
   let [logoFile, setLogoFile] = useState(null);
@@ -62,6 +62,7 @@ function EditRafflePartnerView({ partner }) {
     setResourceLink(e.target.value);
   }
   function handleLogoChange(e) {
+    console.log('reached')
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
       setLogo(URL.createObjectURL(file));
@@ -72,6 +73,7 @@ function EditRafflePartnerView({ partner }) {
     }
   }
   function handleResourceLogoChange(e) {
+    console.log('reached')
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
       setResourceLogo(URL.createObjectURL(file));
@@ -82,15 +84,16 @@ function EditRafflePartnerView({ partner }) {
     }
   }
   function handleSubmit(id) {
-    let formData = {
-      organization_name: organizationName,
-      resource_link: resourceLink,
-      resource_category: resourceCategory,
-      logo: logoFile,
-      resourceLogo: resourceLogoFile,
-    };
+    
+    const formData = new FormData();
+    formData.append("organization_name", organizationName || "");
+    formData.append("resource_link", resourceLink || "");
+    formData.append("resource_category", resourceCategory || "");
+    formData.append("logo", logoFile);
+    formData.append("resourceLogo", resourceLogoFile);
+    
     try {
-      axios.put(`/api/raffle-item/${id}`, formData);
+      axios.put(`/api/raffle-partner/${id}`, formData);
     } catch (err) {
       console.error("Submission error:", err);
     }
@@ -127,7 +130,7 @@ function EditRafflePartnerView({ partner }) {
           <Input
             className="text-white-400"
             id="resourceLink"
-            type="url"
+            type="text"
             placeholder="Resource Link"
             required
             onChange={handleResourceLinkChange}
@@ -192,7 +195,6 @@ export default function AdminRafflePartnerView() {
       setPartners(partners.filter((partner) => partner._id !== partnerId));
     } catch (error) {
       console.error("Error deleting partner:", error);
-      alert("Failed to delete partner.");
     }
   }
   return (

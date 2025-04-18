@@ -63,16 +63,16 @@ export default function CreateRafflePartner({ className, ...props }) {
       setErrorMessage("Please upload a valid image file.");
     }
   }
-  function handleSubmit() {
-    let formData = {
-      organization_name: organizationName,
-      resource_link: resourceLink,
-      resource_category: resourceCategory,
-      logo: logoFile,
-      resourceLogo: resourceLogoFile,
-    };
+  function handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("organization_name", organizationName || "");
+    formData.append("resource_link", resourceLink || "");
+    formData.append("resource_category", resourceCategory || "");
+    formData.append("logo", logoFile);
+    formData.append("resourceLogo", resourceLogoFile);
     try {
-      axios.post(`/api/raffle-item`, formData);
+      axios.post(`/api/raffle-partner`, formData);
     } catch (err) {
       console.error("Submission error:", err);
     }
@@ -119,7 +119,7 @@ export default function CreateRafflePartner({ className, ...props }) {
                 <Input
                   className="text-white-400"
                   id="resourceLink"
-                  type="url"
+                  type="text"
                   placeholder="Resource Link"
                   required
                   onChange={handleResourceLinkChange}
