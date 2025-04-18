@@ -26,10 +26,14 @@ function Login({ className, ...props }) {
 
   useEffect(() => {
     if (user && user._id) {
-      navigate(`/business-db/${user._id}`);
-      console.log(user)
+      if (user.role[0] === "business") {
+        navigate(`/business-db/${user._id}`);
+      } else if (user.role[0] === "admin") {
+        navigate("/admin-db/");
+      }
     }
   }, [user]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -6,15 +6,17 @@ import SubmitWinners from "@/customComponents/SubmitWinners";
 import ConfirmAttendance from "@/customComponents/ConfirmAttendance";
 import LearnAndEarnQuestions from "@/customComponents/LearnAndEarnQuestions";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 
 
 function BusinessAdminPanel() {
   const { id } = useParams();
   const { logout } = useContext(AuthContext);
+  const navigate = useNavigate()
   const handleLogout = () => {
-    logout(); // Call the logout function
-    navigate("/login"); // Redirect to login page
+    logout(); 
+    navigate("/login"); 
   };
   return (
     <div>

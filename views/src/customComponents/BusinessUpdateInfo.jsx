@@ -26,7 +26,7 @@ export default function EditYourInfo({ className, userType, ...props }) {
   const fetchBusinessInfo = async () => {
     try {
       const response = await axios.get(`/api/business/${id}`);
-      if (response.status !== 200) {
+      if (response.status != 200) {
         navigate(-1);
       }
       setName(response.data.business_name);

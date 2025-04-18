@@ -25,7 +25,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/business-db/:id" element={<ProtectedRoute><BusinessAdminPanel /></ProtectedRoute>} />
-          <Route path="/admin-db" element={<SuperAdminPanel />}>
+          <Route path="/admin-db" element={<ProtectedRoute><SuperAdminPanel /></ProtectedRoute>}>
             <Route path="manage-businesses" element={<AdminBusinessView />} />
             <Route path="manage-users" element={<AdminStudentView />} />
             <Route path="manage-raffle/add-item" element={<AddRaffleItem />} />
