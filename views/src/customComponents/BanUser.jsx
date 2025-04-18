@@ -50,12 +50,12 @@ export default function BanUser({ student }) {
       axios.put(`/api/ban-user/${id}`, {
         duration: banDuration,
       });
-      alert(
+     console(
         `${student.name} has been banned for ${formatDuration(banDuration)}!`
       );
     } catch (error) {
       console.error("Error banning user:", error);
-      alert("Failed to ban user.");
+     console("Failed to ban user.");
     }
   }
   return (
