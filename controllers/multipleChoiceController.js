@@ -1,10 +1,11 @@
 const { checkIfExists } = require('../utils/modelUtils');
 const MultipleChoice = require('../models/multipleChoice')
-
+const mongoose = require("mongoose");
 exports.getMultipleChoice = async (req, res) => {
     try {
         const { id } = req.params; //admin business id used here, getting questions based on the business
-        const questions = await MultipleChoice.find({ business_id: id, deleted: false });
+        const questions = await MultipleChoice.find({ business_id: id, deleted: { $ne: true } });
+        console.log(id)
         res.json({ questions });
       } catch (error) {
         console.error("Error fetching questions:", error);
@@ -14,7 +15,7 @@ exports.getMultipleChoice = async (req, res) => {
 exports.getMultipleChoiceCount = async (req, res) => {
     try {
         const {id} = req.params;    //admin business id used here, counting for each business
-        const count = await MultipleChoice.countDocuments({ business_id: id, deleted: false });
+        const count = await MultipleChoice.countDocuments({ business_id: new mongoose.Types.ObjectId(id), deleted: { $ne: true } });
         res.status(200).json({ count: count });
     } catch (error) {
         console.error("Error fetching questions:", error);
@@ -31,12 +32,12 @@ exports.createMultipleChoice = async (req, res) => {
             return res.status(400).json({ error: "Missing fields" });
         }
 
-        const questionCount = await MultipleChoice.countDocuments({ business_id, deleted: false });
+        const questionCount = await MultipleChoice.countDocuments({ business_id, deleted: { $ne: true } });
 
         if (questionCount >= 3) {
             return res.status(400).json({ error: "Maximum of 3 questions allowed per business" });
         }
-        const newQuestion = new MultipleChoice({ business_id, question, answers });
+        const newQuestion = new MultipleChoice({ business_id, question, answers});
         await newQuestion.save();
 
         res.status(200).json({ message: "Multiple choice created successfully", newQuestion });
