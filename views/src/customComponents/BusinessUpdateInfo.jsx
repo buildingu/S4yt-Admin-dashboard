@@ -26,18 +26,15 @@ export default function EditYourInfo({ className, userType, ...props }) {
   const fetchBusinessInfo = async () => {
     try {
       const response = await axios.get(`/api/business/${id}`);
-      if (response.status != 200) {
-        navigate(-1);
-      }
       setName(response.data.business_name);
       setDescription(response.data.description);
       setQuestion(response.data.question_main);
-      setYtLink(response.data.youtube_link);
+      setYtLink(response.data.video_url);
       setTitle(response.data.title);
       setLogo(response.data.logo);
       setIsLoading(false);
     } catch (error) {
-      navigate(-1);
+      navigate('/login');
     }
   };
 

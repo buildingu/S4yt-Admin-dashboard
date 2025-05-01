@@ -12,7 +12,6 @@ const businessSchema = new mongoose.Schema({
       explanation: String,
       correct: String
     }],
-    link: String,
     video_tile: String,
     video_url: { type: String },
     title: String,

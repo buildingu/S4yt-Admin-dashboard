@@ -39,7 +39,7 @@ function EditBusinessView({ business }) {
   const [name, setName] = useState(business?.business_name);
   const [description, setDescription] = useState(business?.description);
   const [question, setQuestion] = useState(business?.question_main);
-  const [ytLink, setYtLink] = useState(business?.youtube_link);
+  const [ytLink, setYtLink] = useState(business?.video_url);
   const [errorMessage, setErrorMessage] = useState("");
   const [title, setTitle] = useState(business?.title);
   const [awardLimit, setAwardLimit] = useState(business?.award_limit);

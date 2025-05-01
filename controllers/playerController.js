@@ -1,5 +1,6 @@
 const Player = require("../models/playerUser");
 const AdminBusiness = require("../models/adminbusiness");
+const Challenge = require("../models/challenge");
 const Business = require("../models/business");
 const mongoose = require("mongoose");
 const Answer = require("../models/answers");
@@ -95,15 +96,20 @@ const getWinners = async (req, res) => {
       user: winner.user.toString(),
       award: winner.award,
     }));
+    const winnerUserIds = winnerUserAwards.map((w) => w.user);
+    const challenge = await Challenge.findOne({ admin_business: businessId }).select("_id");
+    if (!challenge) {
+      return res.status(404).json({ message: "Challenge not found for this business" });
+    }
 
-    const winnersAnswers = await Answer.find({
-      user: { $in: winnerUserAwards.map((w) => w.user) },
-    }).select("submission_link user rating");
+    const answers = await Answer.find({
+      user: { $in: winnerUserIds },
+      challenge_id: challenge._id,
+    })
 
-    const winnersData = winnersAnswers.map((answer) => {
-      const winner = winnerUserAwards.find(
-        (winner) => winner.user === answer.user.toString()
-      );
+
+    const winnersData = answers.map((answer) => {
+      const winner = winnerUserAwards.find((w) => w.user === answer.user.toString());
       return {
         submission_link: answer.submission_link,
         user: answer.user,
@@ -122,7 +128,7 @@ const getWinners = async (req, res) => {
 
 const saveWinners = async (req, res) => {
   try {
-    const { businessId } = req.params;
+    const { businessId } = req.params; //adminbusiness
     const { winners } = req.body;
     if (winners.length === 0) {
       return res
@@ -156,7 +162,7 @@ const saveWinners = async (req, res) => {
     const business = await Business.findOne({
       admin_business_id: new mongoose.Types.ObjectId(businessId),
     });
-    console.log(business);
+
     await Business.findByIdAndUpdate(business._id, {
       $addToSet: {
         winners: { $each: formatted2Winners },
